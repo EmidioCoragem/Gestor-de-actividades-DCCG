@@ -8,6 +8,10 @@ Next.js App Router, TypeScript strict, Tailwind CSS, ESLint, navegação respons
 
 São páginas iniciais sem dados, autenticação ou operações reais. Supabase Auth, PostgreSQL e Storage só têm a estrutura de integração preparada. Não utilizar informação confidencial nem publicar esta versão como sistema operacional.
 
+## Abrir automaticamente no GitHub Codespaces
+
+O projecto inclui `.devcontainer/devcontainer.json`: porta 3000 declarada, instalação com `npm ci` e arranque automático ao ligar o editor. Num Codespace existente, actualizar a branch e executar **Codespaces: Rebuild Container** uma vez; reiniciar apenas o terminal não aplica a configuração. A porta deve permanecer **Private**. Se a API não permitir definir a privacidade, o script pára e explica a confirmação manual necessária. [Passos e diagnóstico](docs/previsualizacao-codespaces.md).
+
 ## Trabalhar inteiramente na nuvem
 
 No terminal do ambiente Cloud, com Node 24:
