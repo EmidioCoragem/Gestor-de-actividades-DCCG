@@ -55,3 +55,19 @@ O aviso install-scripts do npm 11.19.1 informa que unrs-resolver tem um postinst
 O novo workflow .github/workflows/fase-0.yml usa Node 24.22.2 e npm 11.19.1. Em Pull Requests para main verifica npm ci, ausência de alterações nos manifestos, lint, tipos, testes unitários, build e Playwright. Tem apenas permissão de leitura do repositório e não contém passos de deploy nem acesso a Supabase. O resultado no GitHub Actions só pode ser considerado aprovado depois da execução efectiva; os resultados locais não substituem esse estado.
 
 A interface recebe apenas um ajuste de acessibilidade: o painel de identificação fecha com Escape, devolvendo foco ao controlo, e fecha ao clicar/tocar fora. Não existe autenticação real. A Fase 1, merge e publicação continuam fora do âmbito autorizado.
+
+## Confirmação final após envio das alterações
+
+O commit `fc946f36d4b5859a098ccdd70ee54d73860bed76` foi enviado e obtido novamente por git fetch. Outro git archive produziu uma segunda pasta limpa, sem node_modules. Executou-se nela, com Node 24.22.2 e npm 11.19.1:
+
+1. npm ci: aprovado, 415 pacotes, sem executar npm install antes.
+2. ESLint: aprovado.
+3. TypeScript: aprovado.
+4. Vitest: 8 testes aprovados.
+5. Build Next.js: aprovado para todas as rotas.
+6. Playwright com Chromium local: 45 testes aprovados, 15 por formato (computador, tablet e telemóvel), incluindo Escape, devolução de foco e fecho do painel por toque fora.
+7. SHA-256 do package-lock.json após todos os comandos: permanece `bf76da7a745730c8a19a4ab8fd9ffdca943dc351690d8613d7a2dc7dad51f932`.
+
+A segunda instalação usou apenas o cache de pacotes verificados da primeira; não reutilizou node_modules nem alterações de manifestos. Esta confirmação usa o código efectivamente enviado ao GitHub. O commit seguinte acrescenta apenas este registo documental, sem mudar aplicação, testes, workflow ou dependências.
+
+A API GitHub permanece bloqueada com 403 neste ambiente. O envio da branch está confirmado por Git; a descrição do PR e o resultado da execução do workflow no GitHub não puderam ser consultados/alterados por API. O PR recebe os commits pela branch fase-0-fundacao. Nenhum merge foi efectuado e main mantém o commit original.
