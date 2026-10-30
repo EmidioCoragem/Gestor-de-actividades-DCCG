@@ -26,7 +26,7 @@ async function portalResponds() {
       signal: AbortSignal.timeout(3000),
     });
     return (
-      response.ok && (await response.text()).includes("Portal Empresarial")
+      response.ok && (await response.text()).includes("Gestor de Actividades")
     );
   } catch {
     return false;
@@ -41,7 +41,7 @@ if (await isListening()) {
     process.exitCode = 1;
   } else {
     console.log(
-      "O Portal Empresarial já responde na porta 3000. Abra Ports → Portal Empresarial — Dashboard → Open in Browser.",
+      "O Gestor de Actividades já responde na porta 3000. Abra Ports → Gestor de Actividades — Dashboard → Open in Browser.",
     );
   }
 } else {
@@ -75,7 +75,7 @@ if (await isListening()) {
     process.exitCode = 1;
   } else {
     console.log(
-      `Dashboard pronto na porta 3000. Abra Ports → Portal Empresarial — Dashboard → Open in Browser. Registo: ${logPath}`,
+      `Dashboard pronto na porta 3000. Abra Ports → Gestor de Actividades — Dashboard → Open in Browser. Registo: ${logPath}`,
     );
   }
 }

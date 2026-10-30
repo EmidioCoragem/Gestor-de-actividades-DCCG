@@ -10,7 +10,7 @@ Não existe acesso administrativo ao Codespace do utilizador neste ambiente. A a
 
 - Imagem oficial Microsoft de desenvolvimento com Node 24, tag 5.2.5-24-bookworm, confirmada no catálogo e no manifesto OCI (Linux amd64/arm64).
 - Feature oficial github-cli para o comando de privacidade.
-- forwardPorts: 3000, rótulo «Portal Empresarial — Dashboard», protocolo interno HTTP e acção openBrowser. A ligação externa autenticada é gerida pelo GitHub.
+- forwardPorts: 3000, rótulo «Gestor de Actividades — Dashboard», protocolo interno HTTP e acção openBrowser. A ligação externa autenticada é gerida pelo GitHub.
 - postCreateCommand: npm ci.
 - postAttachCommand: arranque automático com bash .devcontainer/start-preview.sh.
 - npm run dev: next dev --hostname 0.0.0.0 --port 3000.
@@ -29,7 +29,7 @@ O schema Dev Containers não suporta visibility em portsAttributes. A privacidad
    ```
 
 4. Abrir a paleta de comandos (Ctrl+Shift+P; no Mac, Cmd+Shift+P). Procurar e seleccionar **Codespaces: Rebuild Container**. Confirmar a reconstrução se solicitado. Não escolher Delete Codespace. A reconstrução aplica a imagem, as portas e os comandos novos; reiniciar apenas o Next.js ou o terminal não aplica o devcontainer.json.
-5. Aguardar a instalação e a ligação ao editor. O arranque é automático; o browser pode pedir autorização para abrir a nova aba. No separador **Ports**, a porta **3000** terá o rótulo **Portal Empresarial — Dashboard**. Confirmar **Private** e clicar no ícone de globo **Open in Browser** se a aba não abrir automaticamente.
+5. Aguardar a instalação e a ligação ao editor. O arranque é automático; o browser pode pedir autorização para abrir a nova aba. No separador **Ports**, a porta **3000** terá o rótulo **Gestor de Actividades — Dashboard**. Confirmar **Private** e clicar no ícone de globo **Open in Browser** se a aba não abrir automaticamente.
 
 Um novo Codespace criado a partir da branch usa esta configuração desde a criação. Não é preciso instalar aplicações no computador nem fazer merge.
 

@@ -42,7 +42,7 @@ export default function Dashboard() {
       </div>
       <div className="foundation-strip">
         <span className="status-dot" />
-        <strong>Portal Empresarial Integrado</strong>
+        <strong>Gestor de Actividades</strong>
         <span>Uma base comum para coordenar as suas equipas.</span>
       </div>
       <div className="notice">

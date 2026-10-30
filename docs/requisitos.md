@@ -1,3 +1,5 @@
+> **Identidade actual: Gestor de Actividades — Gestão Integrada.** O texto abaixo preserva a especificação original v1.4, incluindo o nome usado na altura. A mudança de identidade na Fase 0 não altera módulos, funcionalidades, regras ou limites aprovados.
+
 # PORTAL EMPRESARIAL INTEGRADO
 ## PROMPT MESTRE PARA O CODEX CLOUD — VERSÃO 1.4
 

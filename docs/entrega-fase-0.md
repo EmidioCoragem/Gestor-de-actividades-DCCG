@@ -1,4 +1,6 @@
-# Entrega para revisão — Fase 0
+# Entrega original para revisão — Fase 0
+
+> Documento histórico. O produto chama-se actualmente **Gestor de Actividades**; o título de PR sugerido abaixo mantém o nome utilizado na entrega inicial.
 
 ## Alterações
 

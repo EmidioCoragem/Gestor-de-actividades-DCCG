@@ -2,6 +2,19 @@ import { test, expect } from "@playwright/test";
 import { modules } from "../../src/modules/catalog";
 test("Dashboard explicita ausência de dados operacionais", async ({ page }) => {
   await page.goto("/");
+  await expect(page).toHaveTitle("Gestor de Actividades");
+  await expect(page.locator(".brand")).toContainText("Gestor de Actividades");
+  await expect(page.locator(".brand small")).toHaveText("Gestão Integrada");
+  await expect(page.locator(".brand-mark")).toHaveText("G");
+  await expect(page.locator('meta[name="application-name"]')).toHaveAttribute(
+    "content",
+    "Gestor de Actividades",
+  );
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    "content",
+    /Gestor de Actividades/,
+  );
+  await expect(page.locator("body")).not.toContainText("Portal Empresarial");
   await expect(
     page.getByRole("heading", { name: "Dashboard", exact: true }),
   ).toBeVisible();
@@ -24,6 +37,10 @@ for (const portalModule of modules) {
       .getByRole("link", { name: portalModule.title, exact: true });
     await link.click();
     await expect(page).toHaveURL(`/${portalModule.slug}`);
+    await expect(page).toHaveTitle(
+      `${portalModule.title} | Gestor de Actividades`,
+    );
+    await expect(page.locator("body")).not.toContainText("Portal Empresarial");
     await expect(
       page.getByRole("heading", { name: portalModule.title, exact: true }),
     ).toBeVisible();

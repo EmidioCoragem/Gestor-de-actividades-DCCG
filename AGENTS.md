@@ -1,4 +1,4 @@
-# Portal Empresarial Integrado
+# Gestor de Actividades
 
 Comunicar em português de Angola, com explicações acessíveis. O escopo autorizado é apenas a Fase 0 do documento docs/requisitos.md. Pedir aprovação explícita antes de iniciar a Fase 1 e antes de publicar em produção.
 

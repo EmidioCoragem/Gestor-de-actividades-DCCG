@@ -21,10 +21,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
       <aside className="sidebar">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
           <span className="brand-mark" aria-hidden="true">
-            P
+            G
           </span>
           <span>
-            Portal Empresarial<small>Gestão integrada</small>
+            Gestor de Actividades<small>Gestão Integrada</small>
           </span>
         </Link>
         <button
@@ -67,7 +67,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
         <header className="topbar">
           <div>
             <span className="breadcrumb">
-              Portal Empresarial <span aria-hidden="true">/</span>
+              Gestor de Actividades <span aria-hidden="true">/</span>
             </span>{" "}
             <strong>{current?.title ?? "Página"}</strong>
           </div>
@@ -81,7 +81,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           {children}
         </main>
         <footer className="footer">
-          Portal Empresarial Integrado{" "}
+          Gestor de Actividades{" "}
           <span>Empresa única · Vários departamentos</span>
         </footer>
       </div>

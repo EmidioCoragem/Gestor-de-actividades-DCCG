@@ -50,3 +50,11 @@ A Fase 1 permanece dependente da aprovação explícita do responsável.
 - Comparação das versões do lockfile: zero actualizações das entradas anteriores e nenhuma remoção.
 
 Os testes desta revisão foram executados no ambiente Cloud. Não foram executados dentro do Codespace do utilizador nem como GitHub Actions.
+
+## Actualização da identidade oficial
+
+O produto passa a chamar-se **Gestor de Actividades**, com subtítulo **Gestão Integrada**. Foram actualizados o menu lateral, a letra G do logótipo mantendo o estilo, o Dashboard, o cabeçalho e rodapé partilhados, os títulos do navegador, applicationName e descrição dos metadados, o rótulo do Codespaces e as mensagens de arranque.
+
+A documentação corrente identifica o novo nome. A especificação original v1.4 permanece integralmente preservada após uma nota de contexto; a entrega inicial está identificada como documento histórico. O repositório, o identificador técnico npm e todas as funcionalidades, módulos e limites da Fase 0 mantêm-se.
+
+Verificações desta alteração: ESLint, TypeScript, 11 testes unitários e compilação aprovados; 45 testes Playwright aprovados, incluindo novo nome, subtítulo, logótipo G, metadados e títulos de todos os módulos em computador, tablet e telemóvel. Não foram alteradas dependências nem lockfile. O script de pré-visualização foi executado com sucesso e reconheceu a nova identidade na resposta HTTP.

@@ -1,6 +1,8 @@
-# Portal Empresarial Integrado
+# Gestor de Actividades
 
-Fundação técnica (Fase 0) no repositório `Gestor-de-actividades-DCCG`. O nome `portal-empresarial` identifica a aplicação; nenhum repositório foi criado ou renomeado.
+Fundação técnica (Fase 0) no repositório `Gestor-de-actividades-DCCG`. O nome oficial é **Gestor de Actividades**, com subtítulo **Gestão Integrada**. O identificador técnico npm `portal-empresarial` é mantido por compatibilidade; nenhum repositório foi criado ou renomeado.
+
+A especificação v1.4 mantém todos os módulos e requisitos aprovados. O nome anterior é preservado apenas em documentos históricos explicitamente identificados.
 
 ## O que está incluído
 
