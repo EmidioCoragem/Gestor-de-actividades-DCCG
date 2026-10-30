@@ -23,3 +23,13 @@ A navegação tem etiquetas, foco visível, ligação para saltar conteúdo, pá
 As páginas iniciais são públicas e contêm apenas descrição funcional. Cabeçalhos básicos reduzem exposição, mas não substituem a homologação. Na Fase 1 implementar autenticação, renovação de sessão, autorização servidor e RLS, com testes negativos antes de disponibilizar dados. Anexos usarão buckets privados e URLs assinadas após verificação de acesso. Não existe schema SQL implantado nesta fase.
 
 Fase 8: validar CSP, rate limiting, observabilidade sem dados sensíveis, backups com recuperação testada, retenção, desempenho e serviço de alojamento. Não publicar em produção antes da aprovação.
+
+## Revisão visual da Fase 0
+
+O Dashboard privilegia actividades pendentes, validações, prazos e fecho. Os cartões têm ligações aos módulos, mas não calculam indicadores. O painel institucional foi reduzido a uma faixa compacta. Ícones SVG locais identificam os módulos de forma consistente, sem fontes remotas.
+
+A identificação do utilizador é um painel expansível com nome, cargo, departamento e perfil marcados como indisponíveis. A opção «Terminar sessão» está desactivada. Não há utilizador ou sessão simulada.
+
+`src/modules/navigation.ts` declara os cinco perfis funcionais e uma função de configuração visual por identificadores de módulo. A interface inicial apresenta todos os módulos informativos. Não há troca de perfil nem atribuição de poderes. Na Fase 1 a configuração visual deverá derivar das permissões resolvidas pelo servidor, mantendo autorização de cada pedido e RLS independentemente dos links apresentados.
+
+Para Codespaces, `allowedDevOrigins` acrescenta apenas o hostname da porta 3000 derivado das variáveis próprias do Codespace, sem autorizar globalmente todos os Codespaces. O encaminhamento de portas deve continuar privado.

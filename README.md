@@ -18,9 +18,9 @@ npm ci
 npm run dev
 ```
 
-Se ainda não existir `package-lock.json`, executar `npm install` uma vez e incluir o lockfile na revisão. Não editar o lockfile manualmente. Não é necessário instalar software no computador pessoal.
+O `package-lock.json` está incluído e foi sincronizado pelo npm. Usar Node 24 e npm 10 ou 11 (referência: npm 11.9.0). Se `npm ci` falhar, guardar o erro e verificar as versões; não usar `npm install` para ocultar a incompatibilidade. Não editar o lockfile manualmente. Não é necessário instalar software no computador pessoal.
 
-A aplicação escuta a porta 3000. Utilizar o encaminhamento de portas ou a pré-visualização **se o serviço Cloud utilizado disponibilizar esse recurso**. A interface de onboarding deste ambiente não disponibiliza pré-visualização web; não existe aqui um endereço público para abrir a aplicação. Pedidos HTTP locais servem apenas para validação interna. Não publicar em produção para contornar esta limitação.
+A aplicação escuta a porta 3000. Utilizar o encaminhamento de portas ou a pré-visualização **se o serviço Cloud utilizado disponibilizar esse recurso**. No GitHub Codespaces, abrir a porta 3000 no separador Ports com visibilidade Private. A interface de onboarding deste ambiente não disponibiliza pré-visualização web; não existe aqui um endereço público para abrir a aplicação. Pedidos HTTP locais servem apenas para validação interna. Não publicar em produção para contornar esta limitação.
 
 ## Verificação
 
@@ -46,7 +46,8 @@ A Fase 0 funciona sem `.env.local`. Para integração futura, copiar `.env.examp
 - [Arquitectura](docs/arquitectura.md)
 - [Permissões](docs/permissoes.md)
 - [Modelo de dados](docs/modelo-de-dados.md)
-- [Entrega e verificações](docs/entrega-fase-0.md)
+- [Entrega e verificações iniciais](docs/entrega-fase-0.md)
+- [Revisão final e actualização do Codespaces](docs/revisao-final-fase-0.md)
 - [Instruções para agentes](AGENTS.md)
 
 Rever o diff antes de integrar. Não iniciar a Fase 1 nem publicar sem aprovação explícita do responsável.
