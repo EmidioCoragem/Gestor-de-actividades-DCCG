@@ -48,6 +48,7 @@ A Fase 0 funciona sem `.env.local`. Para integração futura, copiar `.env.examp
 - [Modelo de dados](docs/modelo-de-dados.md)
 - [Entrega e verificações iniciais](docs/entrega-fase-0.md)
 - [Revisão final e actualização do Codespaces](docs/revisao-final-fase-0.md)
+- [Confirmação da instalação remota e comparação do lockfile](docs/confirmacao-instalacao-remota.md)
 - [Instruções para agentes](AGENTS.md)
 
 Rever o diff antes de integrar. Não iniciar a Fase 1 nem publicar sem aprovação explícita do responsável.

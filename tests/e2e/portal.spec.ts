@@ -96,11 +96,27 @@ test("Cartões operacionais conduzem aos módulos previstos", async ({
     ["Fecho mensal", "/fecho-mensal"],
   ]) {
     await expect(
-      metrics
-        .getByRole("link")
-        .filter({
-          has: page.getByRole("heading", { name: label, exact: true }),
-        }),
+      metrics.getByRole("link").filter({
+        has: page.getByRole("heading", { name: label, exact: true }),
+      }),
     ).toHaveAttribute("href", href);
   }
+});
+
+test("Painel de identificação fecha com Escape e toque fora", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const details = page.locator("details.user-identification");
+  const summary = details.locator("summary");
+  await summary.click();
+  await expect(details).toHaveAttribute("open", "");
+  await page.keyboard.press("Escape");
+  await expect(details).not.toHaveAttribute("open");
+  await expect(summary).toBeFocused();
+  await summary.click();
+  await page
+    .getByRole("heading", { name: "Áreas de trabalho", exact: true })
+    .click();
+  await expect(details).not.toHaveAttribute("open");
 });

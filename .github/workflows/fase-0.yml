@@ -1,0 +1,38 @@
+name: Verificação da Fase 0
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.22.2
+          cache: npm
+      - name: Usar a versão npm verificada no Codespaces
+        run: npm install --global npm@11.19.1
+      - name: Instalação limpa sem corrigir o lockfile
+        run: |
+          node --version
+          npm --version
+          npm ci
+          git diff --exit-code -- package.json package-lock.json
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Preparar Chromium para os testes
+        run: npx playwright install --with-deps chromium
+      - name: Testar computador, tablet e telemóvel
+        run: npm run test:e2e
+        env:
+          CI: "true"

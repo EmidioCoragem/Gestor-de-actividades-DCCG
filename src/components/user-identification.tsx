@@ -1,8 +1,39 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { functionalProfiles } from "@/modules/navigation";
 
 export function UserIdentification() {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const closeOutside = (event: PointerEvent) => {
+      const details = detailsRef.current;
+      if (
+        details?.open &&
+        event.target instanceof Node &&
+        !details.contains(event.target)
+      ) {
+        details.open = false;
+      }
+    };
+    const closeWithEscape = (event: KeyboardEvent) => {
+      const details = detailsRef.current;
+      if (event.key === "Escape" && details?.open) {
+        details.open = false;
+        details.querySelector("summary")?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeWithEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeWithEscape);
+    };
+  }, []);
+
   return (
-    <details className="user-identification">
+    <details ref={detailsRef} className="user-identification">
       <summary>
         <span className="user-avatar" aria-hidden="true">
           <svg
