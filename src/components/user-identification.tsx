@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { functionalProfiles } from "@/modules/navigation";
+import type { ViewerIdentity } from "./portal-shell";
+import { signOut } from "@/modules/auth/actions";
 
-export function UserIdentification() {
+export function UserIdentification({ viewer }: { viewer: ViewerIdentity }) {
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
@@ -49,36 +50,33 @@ export function UserIdentification() {
           </svg>
         </span>
         <span>
-          Identificação do utilizador<small>Sem sessão autenticada</small>
+          {viewer.name}
+          <small>{viewer.position}</small>
         </span>
         <span aria-hidden="true">⌄</span>
       </summary>
       <div className="user-panel">
-        <h2>Identificação futura</h2>
-        <p>Disponível após a implementação da autenticação na Fase 1.</p>
+        <h2>Conta autenticada</h2>
+        <p>{viewer.email}</p>
         <dl>
           {[
-            "Nome do utilizador",
-            "Cargo",
-            "Departamento",
-            "Perfil funcional",
-          ].map((label) => (
+            ["Nome do utilizador", viewer.name],
+            ["Cargo", viewer.position],
+            ["Departamento", viewer.department],
+            [
+              "Perfil funcional",
+              viewer.roles.join(", ") || "Sem perfil atribuído",
+            ],
+          ].map(([label, value]) => (
             <div key={label}>
               <dt>{label}</dt>
-              <dd>Não disponível</dd>
+              <dd>{value}</dd>
             </div>
           ))}
         </dl>
-        <p className="profile-note">
-          Perfis previstos: {functionalProfiles.join(", ")}. Nenhum perfil está
-          atribuído nesta versão.
-        </p>
-        <button type="button" disabled aria-describedby="session-note">
-          Terminar sessão
-        </button>
-        <p id="session-note">
-          Opção indisponível: não existe sessão autenticada.
-        </p>
+        <form action={signOut}>
+          <button type="submit">Terminar sessão</button>
+        </form>
       </div>
     </details>
   );

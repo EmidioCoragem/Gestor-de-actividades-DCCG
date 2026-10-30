@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { requireModule } from "@/modules/auth/session";
+import { modulePermissions } from "@/modules/access/policy";
 import { ModuleIcon, ArrowIcon } from "./module-icon";
 import type { PortalModule } from "@/modules/catalog";
-export function ModulePage({ module }: { module: PortalModule }) {
+export async function ModulePage({ module }: { module: PortalModule }) {
+  await requireModule(modulePermissions[module.slug]);
   return (
     <>
       <div className="page-heading">

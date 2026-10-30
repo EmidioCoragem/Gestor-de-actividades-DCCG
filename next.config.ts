@@ -7,6 +7,10 @@ const codespaceHost =
     : undefined;
 const config: NextConfig = {
   poweredByHeader: false,
+  logging: {
+    serverFunctions: false,
+    incomingRequests: { ignore: [/\/auth\/confirm/] },
+  },
   allowedDevOrigins: ["127.0.0.1", ...(codespaceHost ? [codespaceHost] : [])],
   async headers() {
     return [

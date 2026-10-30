@@ -1,12 +1,12 @@
 # Gestor de Actividades
 
-Comunicar em português de Angola, com explicações acessíveis. O escopo autorizado é apenas a Fase 0 do documento docs/requisitos.md. Pedir aprovação explícita antes de iniciar a Fase 1 e antes de publicar em produção.
+Comunicar em português de Angola, com explicações acessíveis. A Fase 1 está autorizada pelo documento docs/requisitos-fase-1.md. Não iniciar a Fase 2, fazer merge ou publicar em produção sem aprovação explícita.
 
 - Usar o checkout existente: cada tarefa Cloud já é isolada. Não criar worktrees salvo pedido explícito.
 - Node 24, Next.js App Router, TypeScript strict, Tailwind 4. Não acrescentar dependências sem necessidade.
 - Interface: src/app e src/components. Catálogo: src/modules/catalog.ts. Integrações: src/lib. Regras de negócio, autorização e repositórios de dados futuros ficam em módulos separados.
 - Não apresentar números fictícios como resultados reais. Não cadastrar a reconciliação bancária de exemplo em produção.
-- Não implementar processos contabilísticos, cálculos fiscais, aprovações operacionais ou autenticação nesta fase.
+- Implementar apenas autenticação, organização e permissões da Fase 1; sem processos contabilísticos, cálculos fiscais ou aprovações operacionais.
 - Nenhum segredo no Git, no browser ou em logs. Apenas URL e chave pública Supabase em NEXT_PUBLIC_*. service_role nunca no cliente.
 - Fases futuras: autorização no servidor, RLS deny-by-default, Storage privado e auditoria. Menus não são controlo de segurança.
 - Instantes em UTC; datas contabilísticas locais distintas; fuso Africa/Luanda. Não presumir adiamento de prazos legais.

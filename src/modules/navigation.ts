@@ -12,10 +12,9 @@ export type FunctionalProfile = (typeof functionalProfiles)[number];
 export type NavigationItem = (typeof navigation)[number];
 export type ModuleSlug = NavigationItem["slug"];
 
-// Fase 1: o servidor deverá fornecer a configuração visual após resolver o âmbito.
-// Na Fase 0, a ausência de configuração apresenta todos os módulos informativos.
-export function getNavigationItems(visibleModules?: readonly ModuleSlug[]) {
-  if (visibleModules === undefined) return navigation;
+// O servidor fornece a configuração após resolver os âmbitos.
+// Sem configuração explícita, nenhum módulo é apresentado. RLS continua obrigatória.
+export function getNavigationItems(visibleModules: readonly ModuleSlug[] = []) {
   return navigation.filter(
     (item) => item.slug === "" || visibleModules.includes(item.slug),
   );

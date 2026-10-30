@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { getNavigationItems } from "../../src/modules/navigation";
 describe("Configuração visual de navegação, sem autorização", () => {
-  it("apresenta todos os módulos informativos por defeito", () => {
-    expect(getNavigationItems()).toHaveLength(11);
+  it("sem configuração explícita não apresenta módulos privados", () => {
+    expect(getNavigationItems().map((item) => item.slug)).toEqual([""]);
   });
   it("limita apenas os links apresentados e mantém o Dashboard", () => {
     expect(

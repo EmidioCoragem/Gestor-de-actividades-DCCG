@@ -75,7 +75,7 @@ if (await isListening()) {
     process.exitCode = 1;
   } else {
     console.log(
-      `Dashboard pronto na porta 3000. Abra Ports → Gestor de Actividades — Dashboard → Open in Browser. Registo: ${logPath}`,
+      `Gestor de Actividades disponível na porta 3000 (autenticação exige Supabase configurado). Abra Ports → Gestor de Actividades — Dashboard → Open in Browser. Registo: ${logPath}`,
     );
   }
 }

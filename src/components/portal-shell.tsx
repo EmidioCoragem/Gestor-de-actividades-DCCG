@@ -3,12 +3,34 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { getNavigationItems } from "@/modules/navigation";
+import { modules } from "@/modules/catalog";
+import { modulePermissions } from "@/modules/access/policy";
 import { UserIdentification } from "./user-identification";
 import { ModuleIcon } from "./module-icon";
 
-export function PortalShell({ children }: { children: ReactNode }) {
+export type ViewerIdentity = {
+  name: string;
+  email: string;
+  position: string;
+  department: string;
+  roles: string[];
+  permissions: string[];
+};
+export function PortalShell({
+  children,
+  viewer,
+}: {
+  children: ReactNode;
+  viewer: ViewerIdentity;
+}) {
   const pathname = usePathname();
-  const navigation = getNavigationItems();
+  const navigation = getNavigationItems(
+    modules
+      .filter((item) =>
+        viewer.permissions.includes(modulePermissions[item.slug]),
+      )
+      .map((item) => item.slug),
+  );
   const [open, setOpen] = useState(false);
   const current = navigation.find(
     (item) => (item.slug ? `/${item.slug}` : "/") === pathname,
@@ -59,8 +81,8 @@ export function PortalShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="sidebar-footer">
-          <span className="status-dot" /> Fundação técnica{" "}
-          <small>Fase 0 · Ambiente de desenvolvimento</small>
+          <span className="status-dot" /> Identidade e acesso{" "}
+          <small>Fase 1 · Ambiente de desenvolvimento</small>
         </div>
       </aside>
       <div className="workspace">
@@ -73,8 +95,8 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </div>
           <div className="topbar-meta">
             <span>Africa/Luanda</span>
-            <span className="phase-tag">Fase 0</span>
-            <UserIdentification />
+            <span className="phase-tag">Fase 1</span>
+            <UserIdentification viewer={viewer} />
           </div>
         </header>
         <main id="conteudo" tabIndex={-1}>

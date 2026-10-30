@@ -1,34 +1,27 @@
-# Gestor de Actividades
+# Gestor de Actividades — Gestão Integrada
 
-Fundação técnica (Fase 0) no repositório `Gestor-de-actividades-DCCG`. O nome oficial é **Gestor de Actividades**, com subtítulo **Gestão Integrada**. O identificador técnico npm `portal-empresarial` é mantido por compatibilidade; nenhum repositório foi criado ou renomeado.
+Fase 1: autenticação, utilizadores, estrutura organizacional e permissões. A interface adopta azul-escuro corporativo, mantendo os módulos e a estrutura do Dashboard aprovados. Repositório GitHub inalterado: EmidioCoragem/Gestor-de-actividades-DCCG; identificador npm portal-empresarial mantido por compatibilidade.
 
-A especificação v1.4 mantém todos os módulos e requisitos aprovados. O nome anterior é preservado apenas em documentos históricos explicitamente identificados.
+## Estado actual
 
-## O que está incluído
+O código inclui Supabase Auth com sessões verificadas, rotas privadas, convites administrativos, organização e atribuições, políticas RLS e auditoria. **Não há projecto Supabase configurado nesta máquina; os fluxos Auth/SMTP/PostgREST reais ainda não estão homologados.** Sem configuração, / redirecciona para /configuracao e a entrada fica desactivada. Isso é o comportamento de protecção esperado, não uma sessão de demonstração.
 
-Next.js App Router, TypeScript strict, Tailwind CSS, ESLint, navegação responsiva e onze páginas: Dashboard, Actividades, Fecho Mensal, KPIs, Centros de Custo, Estrutura Organizacional, Hierarquia e Permissões, Planeamento e Cronograma, Relatórios, Notificações e Administração.
+Os módulos de actividades, fecho, KPIs, planeamento e relatórios continuam como fundação das fases futuras; não há cálculos ou dados empresariais fictícios. Centros de Custo e SAP/Primavera têm apenas modelo/contratos/documentação, sem importador ou conectores reais. Não foi iniciada a Fase 2.
 
-São páginas iniciais sem dados, autenticação ou operações reais. Supabase Auth, PostgreSQL e Storage só têm a estrutura de integração preparada. Não utilizar informação confidencial nem publicar esta versão como sistema operacional.
+## Desenvolvimento inteiramente online
 
-## Abrir automaticamente no GitHub Codespaces
-
-O projecto inclui `.devcontainer/devcontainer.json`: porta 3000 declarada, instalação com `npm ci` e arranque automático ao ligar o editor. Num Codespace existente, actualizar a branch e executar **Codespaces: Rebuild Container** uma vez; reiniciar apenas o terminal não aplica a configuração. A porta deve permanecer **Private**. Se a API não permitir definir a privacidade, o script pára e explica a confirmação manual necessária. [Passos e diagnóstico](docs/previsualizacao-codespaces.md).
-
-## Trabalhar inteiramente na nuvem
-
-No terminal do ambiente Cloud, com Node 24:
+Na pasta do repositório no Codespaces, usar Node 24 (referência npm 11.9.0; npm 11.19.1 também verificado na Fase 0):
 
 ```sh
-cd /workspace/Gestor-de-actividades-DCCG
 npm ci
 npm run dev
 ```
 
-O `package-lock.json` está incluído e foi sincronizado pelo npm. Usar Node 24 e npm 10 ou 11 (referência: npm 11.9.0). Se `npm ci` falhar, guardar o erro e verificar as versões; não usar `npm install` para ocultar a incompatibilidade. Não editar o lockfile manualmente. Não é necessário instalar software no computador pessoal.
+Abrir a porta 3000 em Ports com visibilidade **Private**. O Dev Container mantém encaminhamento explícito e pode arrancar automaticamente ao ligar o editor. Para aplicar alterações ao devcontainer.json existente, executar Codespaces: Rebuild Container uma vez; guardar alterações locais antes de actualizar. O ambiente Codex usa /workspace/Gestor-de-actividades-DCCG; Codespaces usa normalmente /workspaces/Gestor-de-actividades-DCCG.
 
-A aplicação escuta a porta 3000. Utilizar o encaminhamento de portas ou a pré-visualização **se o serviço Cloud utilizado disponibilizar esse recurso**. No GitHub Codespaces, abrir a porta 3000 no separador Ports com visibilidade Private. A interface de onboarding deste ambiente não disponibiliza pré-visualização web; não existe aqui um endereço público para abrir a aplicação. Pedidos HTTP locais servem apenas para validação interna. Não publicar em produção para contornar esta limitação.
+Para entrar de facto, configurar um projecto Supabase **de desenvolvimento** segundo [este guia](docs/fase-1/supabase.md). Não usar credenciais de produção, não enviar chaves no chat e não colocar service_role no browser. As variáveis estão descritas em .env.example. Não executar npm install para esconder um erro de npm ci; preservar e diagnosticar a mensagem.
 
-## Verificação
+## Verificações
 
 ```sh
 npm run lint
@@ -38,23 +31,19 @@ npm run build
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e
 ```
 
-Nesta imagem Cloud usa-se o Chromium já instalado. Noutros ambientes, instalar o navegador com `npx playwright install chromium` (requer acesso ao CDN oficial) e omitir a variável de caminho.
+Nesta máquina Chromium está instalado. Noutro ambiente, preparar o navegador oficial do Playwright e omitir a variável de caminho. O npm test inclui um PostgreSQL isolado PGlite para executar a migração e testar RLS/integridade, sem serviços de produção. É dependência apenas de desenvolvimento, não um banco de dados da aplicação.
 
-O Playwright inicia o servidor de desenvolvimento e verifica navegação, estados não implementados e dimensão móvel/computador. O Vitest verifica configuração ausente, parcial, insegura e completa do Supabase. Testes de permissões reais serão adicionados juntamente com a implementação da Fase 1. `npm run start` serve a compilação após `npm run build`.
+O Playwright da Fase 1 força configuração Supabase ausente num servidor próprio e verifica bloqueio de todas as rotas privadas, formulários públicos e identidade/responsividade em computador, tablet e telemóvel. Os antigos testes de páginas públicas da Fase 0 foram preservados em tests/phase0 e não são executados: esse comportamento público deixou de ser válido. A homologação autenticada real é separada e ainda pendente.
 
-## Configuração futura
+## Documentação
 
-A Fase 0 funciona sem `.env.local`. Para integração futura, copiar `.env.example` para `.env.local` e configurar apenas a URL e a chave pública do projecto Supabase, através das definições seguras do ambiente. Nunca incluir `service_role` em variáveis públicas. Autenticação, políticas RLS, buckets privados, renovação de sessão, migrações e autorização ainda serão implementados.
+- [Requisitos originais v1.4](docs/requisitos.md) e [autorização consolidada da Fase 1](docs/requisitos-fase-1.md).
+- [Relatório de entrega e resultados](docs/fase-1/entrega.md).
+- [Arquitectura da Fase 1](docs/fase-1/arquitectura.md).
+- [Modelo, RLS e matriz de permissões](docs/fase-1/seguranca-e-dados.md).
+- [Configuração e homologação Supabase](docs/fase-1/supabase.md).
+- [Centros de custo, importações e ERP](docs/fase-1/integracoes.md).
+- [Pré-visualização privada no Codespaces](docs/previsualizacao-codespaces.md).
+- [Instruções para agentes](AGENTS.md).
 
-## Documentação e revisão
-
-- [Requisitos completos](docs/requisitos.md)
-- [Arquitectura](docs/arquitectura.md)
-- [Permissões](docs/permissoes.md)
-- [Modelo de dados](docs/modelo-de-dados.md)
-- [Entrega e verificações iniciais](docs/entrega-fase-0.md)
-- [Revisão final e actualização do Codespaces](docs/revisao-final-fase-0.md)
-- [Confirmação da instalação remota e comparação do lockfile](docs/confirmacao-instalacao-remota.md)
-- [Instruções para agentes](AGENTS.md)
-
-Rever o diff antes de integrar. Não iniciar a Fase 1 nem publicar sem aprovação explícita do responsável.
+Os documentos anteriores descrevem entregas históricas da Fase 0. Sem merge automático, sem portas públicas e sem publicação em produção. A Fase 2 só começa após aprovação expressa.

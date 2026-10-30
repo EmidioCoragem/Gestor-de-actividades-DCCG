@@ -1,8 +1,8 @@
-name: Verificação da Fase 0
+name: Verificação do Gestor de Actividades
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, fase-0-fundacao]
   workflow_dispatch:
 
 permissions:
