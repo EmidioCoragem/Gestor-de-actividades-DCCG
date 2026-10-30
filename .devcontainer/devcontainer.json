@@ -1,0 +1,17 @@
+{
+  "name": "Gestor de Actividades — Fase 0",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:5.2.5-24-bookworm",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Gestor de Actividades — Dashboard",
+      "protocol": "http",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postCreateCommand": "npm ci",
+  "postAttachCommand": "bash .devcontainer/start-preview.sh",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  }
+}
