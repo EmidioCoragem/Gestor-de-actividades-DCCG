@@ -141,3 +141,30 @@ O responsável autorizou guardar documentação, inspecção SQL e testes por co
 - Permanecem válidas as limitações locais de build/navegador descritas acima. Não se alteraram configurações de segurança para contorná-las. As variáveis Supabase dos ensaios de navegador existentes estão vazias por configuração de teste.
 
 O resultado da preparação não autoriza nem executa a Etapa B. A homologação real de Auth/SMTP/cookies e RLS/PostgREST continua pendente, nos termos da secção de decisão.
+
+### Resultado final em GitHub Actions
+
+Código, consulta e testes guardados e enviados para fase-1-autenticacao-permissoes no commit 8b2ade6ad65cb33a2cb39f1fac7b0fbe4dbfdb06. A execução manual do workflow existente terminou com success, sem alteração do workflow, de permissões ou de configurações de segurança:
+
+[Execução 41474094806](https://github.com/EmidioCoragem/Gestor-de-actividades-DCCG/actions/runs/41474094806) — Ubuntu 26.04, Node 24.22.2, npm 11.19.1, duração do job 1m50s.
+
+| Verificação no runner | Resultado |
+| --- | --- |
+| npm ci e ausência de alterações em package.json/package-lock.json | Aprovado; 416 pacotes instalados nesta plataforma |
+| npm run lint | Aprovado |
+| npm run typecheck | Aprovado |
+| npm test | 50 testes aprovados em 6 ficheiros |
+| npm run build, Turbopack | Aprovado |
+| Chromium / Playwright em computador, tablet e telemóvel | 42 testes aprovados |
+
+O runner resolve as limitações locais de portas sem modificar a segurança do ambiente local. Os testes de navegador verificam bloqueio sem Supabase, formulários, callback inválido, identidade azul-escuro e apresentação responsiva. Não validam autenticação real, contas activas, SMTP, privilégios efectivos ou isolamento entre contas no novo projecto. A execução não contém deploy nem migração.
+
+### Riscos e pendências da preparação
+
+- npm ci no runner reportou 16 vulnerabilidades moderadas. Uma auditoria local explícita posterior (npm 11.9.0) reportou 18 moderadas, 0 altas e 0 críticas. Estes números são resultados de execuções distintas; não foram normalizados nem apresentados como ausência de vulnerabilidades.
+- Todos os caminhos afectados da auditoria local completa estão marcados dev=true no lockfile. O aviso de origem identificado é [minimatch: potencial negação de serviço por amplificação de globparts, GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249), propagado pela árvore ESLint/typescript-eslint. npm audit --omit=dev --json terminou com 0 vulnerabilidades reportadas. Isto delimita o resultado da auditoria, sem provar ausência absoluta de risco.
+- Pendência de manutenção: avaliar uma actualização controlada das ferramentas de desenvolvimento e voltar a testar. Não se executou npm audit fix, não se actualizaram dependências e package-lock.json permaneceu intacto.
+- Avisos adicionais: ESLint 9 descontinuado, revisão pendente do postinstall de unrs-resolver segundo npm 11.19.1, avisos de descontinuação das actions v4/Node 20 e de APIs usadas pelas actions. Não se aprovou qualquer script nem se alteraram permissões para os ocultar. A pipeline terminou com sucesso apesar desses avisos.
+- A Etapa B não foi executada. Bootstrap e homologação real de Auth/SMTP/cookies e RLS/PostgREST aguardam autorização e execução no projecto de desenvolvimento.
+
+Esta secção final é uma actualização exclusivamente documental posterior ao commit validado acima. O SHA dos ensaios é 8b2ade6; o commit documental que regista estes resultados não altera código, SQL, dependências ou testes. O SHA-256 da migração permanece 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58.
