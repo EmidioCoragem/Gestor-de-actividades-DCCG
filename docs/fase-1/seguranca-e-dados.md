@@ -1,32 +1,59 @@
 # Modelo, segurança e matriz de acesso
 
-## Prontidão vigente da Etapa B
+## Prontidão vigente da Etapa B — APTO para solicitar autorização
 
-O responsável concluiu e guardou privadamente baseline-fase1-painel.txt. Estão
-confirmados signup público e acessos anónimos desactivados, confirmação de email
-activa, mínimo de 12 caracteres para palavras-passe, Site URL http://localhost:3000,
-nenhuma Redirect URL adicional, SMTP personalizado desactivado e 2 emails/hora.
-Foram registados fornecedores, sessões, parâmetros de tokens, limites e notificações.
-Não se solicitou o ficheiro privado nem valores de credenciais/tokens reais.
+Foram recebidas capturas de ecrã da consulta dos nove checks para o operador
+postgres: todos apresentam estado OK e permitido=true. A captura de leitura de
+supautils.drop_trigger_grants mostra a configuração presente para postgres; as
+capturas do check específico mostram auth_users_autorizado=true. Estes resultados
+encerram as pendências de privilégios e da autorização configurada de remoção do
+trigger em auth.users. A consulta completa do predicado booleano não está visível
+nas capturas; regista-se a evidência do resultado específico apresentado pelo
+responsável, sem alegar auditoria integral desse SQL ou execução efectiva de DROP.
 
-A baseline real foi analisada sem colisões efectivas identificadas. O registo
-privado do painel está concluído por confirmação do responsável. Localhost e
-SMTP/limites não bloqueiam execução ou compensação SQL; devem ser considerados
-na homologação futura dos fluxos de autenticação. Não se alteram agora essas opções.
+| Permissão observada para postgres | Resultado |
+| --- | --- |
+| USAGE public | OK / true |
+| CREATE public | OK / true |
+| USAGE auth | OK / true |
+| SELECT auth.users | OK / true |
+| TRIGGER auth.users | OK / true |
+| REFERENCES auth.users.id | OK / true |
+| Permissão para LOCK SHARE auth.users na recuperação | OK / true |
+| EXECUTE auth.uid() | OK / true |
+| EXECUTE gen_random_uuid() | OK / true |
+| Check específico auth_users_autorizado | true |
 
-**NÃO APTO ainda para solicitar autorização da Etapa B:** os resultados repetidos
-continuam a ser apenas a segunda grelha de propriedade. Faltam as nove linhas
-objecto/estado de supabase/inspection/fase1-operator-checks.sql e o resultado de
-supabase/inspection/fase1-drop-trigger-permission.sql. A pertença ao papel
-supabase_privileged_role não substitui estas verificações. A ausência destes
-resultados é lacuna de evidência, não prova de um bloqueio efectivo do projecto.
+O registo privado baseline-fase1-painel.txt está concluído por confirmação do
+responsável. Estão confirmados signup público e acessos anónimos desactivados,
+confirmação de email activa, mínimo de 12 caracteres para palavras-passe,
+Site URL http://localhost:3000, nenhuma Redirect URL adicional, SMTP personalizado
+desactivado e limite de 2 emails/hora. A baseline real de 15 linhas foi analisada,
+sem colisões efectivas identificadas, com 0 utilizadores Auth e Storage vazio.
+
+**APTO para solicitar autorização expressa da Etapa B, limitada à execução da
+migração original no projecto novo de desenvolvimento confirmado.** Não há
+pendência preparatória impeditiva identificada nas evidências recebidas. Não
+houve autorização de execução nesta mensagem; não se executou SQL remoto. Não
+inclui bootstrap, criação de contas, alterações Auth, publicação ou merge.
+
+Riscos residuais: autorização de remoção observada por consulta de configuração,
+sem executar DROP/TRIGGER remotamente; recuperação validada apenas em PostgreSQL
+local com fixtures e limitada ao estado imediatamente após a migração, sem uso;
+serviços geridos/event triggers Supabase não simulados integralmente; localhost e
+SMTP padrão limitam a homologação Auth futura; 18 alertas moderados de ferramentas
+de desenvolvimento na auditoria local anterior (16 no runner), sem alertas no
+audit omitindo dev; homologação real de Auth/SMTP/cookies/RLS/PostgREST pendente.
+Estas limitações não são apresentadas como novos bloqueios à primeira migração.
 
 Mantidos a migração original e SHA-256
 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58,
-o procedimento compensatório e as dependências. Nenhuma execução remota,
-criação de contas, alteração Auth, publicação ou merge na main. As secções abaixo
-incluem histórico de verificações e pendências já encerradas; este resumo e a
-[análise actualizada](analise-baseline-real.md) prevalecem para o estado vigente.
+o procedimento compensatório e as dependências. Evidências de testes anteriores:
+57 unitários/SQL locais, incluindo 7 de recuperação; build e 42 testes de
+navegador em CI para o código já identificado no histórico. Não foram repetidos
+numa actualização apenas documental. Se houver alterações no projecto antes da
+execução autorizada, revalidar os pontos afectados. As secções abaixo são histórico;
+este resumo e a análise actualizada da baseline prevalecem.
 
 ## Entidades e integridade
 

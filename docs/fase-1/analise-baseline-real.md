@@ -21,26 +21,32 @@ rever as URLs autorizadas antes de testar os fluxos; SMTP padrão e 2 emails/hor
 limitam convites/recuperação. Nenhuma alteração dessas opções é necessária ou foi
 autorizada nesta revisão da migração.
 
-Foram novamente enviados apenas os metadados de propriedade (segunda grelha).
-Não foram enviados nove resultados objecto/estado nem o valor de
-supautils.drop_trigger_grants. A confirmação do registo do painel não comprova
-essas permissões SQL. A propriedade de auth.users por supabase_auth_admin e a
-pertença de postgres a supabase_privileged_role são compatíveis com Supabase, mas
-não validam automaticamente o CREATE/TRIGGER/REFERENCES/EXECUTE/lock nem o DROP
-TRIGGER explícito da recuperação.
+Foram entretanto recebidos os nove checks efectivos, todos OK/permitido=true
+para postgres, e capturas com auth_users_autorizado=true no check específico da
+configuração de remoção de triggers. A imagem de drop_trigger_grants apresenta a
+configuração para postgres, embora o JSON completo apareça truncado. O resultado
+booleano específico é registado como evidência recebida de autorização configurada
+para auth.users. O predicado completo não está visível nas capturas; não se afirma
+que foi auditado integralmente ou que a remoção do trigger tenha sido ensaiada no
+projecto gerido. Esta revisão não executou consultas remotas.
 
-**Conclusão vigente: NÃO APTO para solicitar autorização da Etapa B.** Restam
-exclusivamente evidências de privilégios do operador e de remoção do trigger:
+**Conclusão vigente: APTO para solicitar autorização expressa da Etapa B**,
+limitada à migração SQL original no projecto de desenvolvimento confirmado.
+Estão encerradas as pendências da baseline, registo privado, nove privilégios e
+confirmação específica de autorização de remoção do trigger. Não é necessário
+repetir essas verificações se o projecto não mudou. A autorização de execução
+continua por obter; esta análise não a substitui.
 
-1. As nove linhas de [fase1-operator-checks.sql](../../supabase/inspection/fase1-operator-checks.sql),
-   com as colunas objecto, permitido e estado.
-2. O resultado de [fase1-drop-trigger-permission.sql](../../supabase/inspection/fase1-drop-trigger-permission.sql).
+A recuperação permanece limitada ao estado imediatamente após a migração, antes
+de contas, bootstrap, dados ou alterações posteriores. Configuração de autorização
+não é prova de sucesso de uma operação DDL real: um erro futuro deve interromper
+os trabalhos e ser analisado, sem forçar CASCADE ou alterar permissões. Os sete
+ensaios locais e as guardas permanecem válidos no seu âmbito; Auth, Storage e
+Supautils geridos não foram restaurados no ensaio. URLs e limites de email são
+pendências de homologação funcional posterior, não de execução da migração SQL.
 
-Estas consultas já preparadas são apenas de leitura. Não é necessário repetir o
-inventário ou o registo privado se o estado do projecto não mudou. Não se afirma
-que existe um bloqueio efectivo de privilégios; falta a prova para os validar.
 As secções seguintes preservam o histórico e os fundamentos, incluindo pendências
-que entretanto foram encerradas. O registo privado do painel já não é pendência.
+já encerradas. O resumo acima e o relatório de segurança indicam o estado vigente.
 
 ## Evidência e integridade
 

@@ -150,17 +150,19 @@ tentativas detectaram uma ambiguidade de sintaxe no novo SQL e a dependência
 cruzada das políticas RLS; ambas foram corrigidas no ficheiro de recuperação,
 sem alterar a migração. O resultado de 57 aprovados refere-se aos ficheiros finais.
 
-Actualização: a baseline real foi recebida e revista, sem conflito impeditivo
-identificado nos objectos/dados inventariados. A análise vigente está em
-[analise-baseline-real.md](analise-baseline-real.md), incluindo o hash do CSV.
-**NÃO APTO ainda para solicitar execução remota:** faltam as confirmações do
-registo privado completo do painel e a revisão dos privilégios
-efectivos do operador, que o inventário não exporta. São passos gratuitos de
-leitura/documentação; não é necessário repetir todo o inventário se o projecto
-não mudou. APTIDÃO para a primeira migração não equivale a homologação de Auth ou
-prontidão de produção. Não foi contratado nenhum recurso pago.
+Actualização vigente: baseline real recebida e analisada sem conflitos efectivos,
+registo privado do painel confirmado e nove checks efectivos com OK/true. As
+capturas do check específico da autorização de remoção mostram
+`auth_users_autorizado=true`. As evidências e limites constam de
+[analise-baseline-real.md](analise-baseline-real.md).
 
-Identidade do projecto, cópia privada adicional e quatro estados Auth foram
-confirmados pelo responsável após a análise do CSV. O
-[guia passo a passo](guia-registo-painel.md) e o
-[modelo](modelo-registo-painel.txt) orientam a recolha restante sem alterar o painel.
+**APTO para solicitar autorização expressa da Etapa B**, exclusivamente para a
+migração original no projecto de desenvolvimento confirmado. A configuração de
+remoção foi observada por consulta, sem DROP remoto; o procedimento compensatório
+continua ensaiado localmente e limitado ao estado sem uso após a migração. Uma
+recuperação real exige decisão/autorização próprias e revisão das guardas.
+
+A autorização de execução da migração ainda não foi recebida. Não há autorização
+para bootstrap, criação de contas, alterações Auth, publicação ou merge. Não é
+necessário contratar recursos pagos. APTIDÃO preparatória não equivale a validação
+integral dos serviços Supabase ou a prontidão de produção.
