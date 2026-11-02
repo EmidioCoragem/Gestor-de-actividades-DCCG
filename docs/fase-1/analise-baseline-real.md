@@ -3,6 +3,45 @@
 Documento vigente para a análise do CSV recebido. Não constitui autorização de
 execução da Etapa B ou de recuperação. Nenhuma ligação ao Supabase foi usada.
 
+## Estado vigente após confirmação do registo privado
+
+O responsável confirmou a conclusão e guarda privada de baseline-fase1-painel.txt.
+Esta pendência está encerrada por confirmação do responsável; não foi solicitado
+o ficheiro privado nem qualquer segredo. Configurações reportadas: signup público
+e acessos anónimos desactivados, confirmação de email activa, palavra-passe mínima
+de 12 caracteres, Site URL http://localhost:3000, nenhuma Redirect URL adicional,
+SMTP personalizado desactivado e limite de 2 emails/hora. Foram registadas também
+as configurações de fornecedores, sessões, tokens, limites e notificações.
+
+Os valores de URL/SMTP não impedem a migração SQL: a migração não chama Auth HTTP,
+envia email ou utiliza redireccionamentos. A operação compensatória também não
+depende de entrega de emails ou de URLs. São limitações para futura homologação:
+localhost só serve o contexto local apropriado; uma origem privada remota exige
+rever as URLs autorizadas antes de testar os fluxos; SMTP padrão e 2 emails/hora
+limitam convites/recuperação. Nenhuma alteração dessas opções é necessária ou foi
+autorizada nesta revisão da migração.
+
+Foram novamente enviados apenas os metadados de propriedade (segunda grelha).
+Não foram enviados nove resultados objecto/estado nem o valor de
+supautils.drop_trigger_grants. A confirmação do registo do painel não comprova
+essas permissões SQL. A propriedade de auth.users por supabase_auth_admin e a
+pertença de postgres a supabase_privileged_role são compatíveis com Supabase, mas
+não validam automaticamente o CREATE/TRIGGER/REFERENCES/EXECUTE/lock nem o DROP
+TRIGGER explícito da recuperação.
+
+**Conclusão vigente: NÃO APTO para solicitar autorização da Etapa B.** Restam
+exclusivamente evidências de privilégios do operador e de remoção do trigger:
+
+1. As nove linhas de [fase1-operator-checks.sql](../../supabase/inspection/fase1-operator-checks.sql),
+   com as colunas objecto, permitido e estado.
+2. O resultado de [fase1-drop-trigger-permission.sql](../../supabase/inspection/fase1-drop-trigger-permission.sql).
+
+Estas consultas já preparadas são apenas de leitura. Não é necessário repetir o
+inventário ou o registo privado se o estado do projecto não mudou. Não se afirma
+que existe um bloqueio efectivo de privilégios; falta a prova para os validar.
+As secções seguintes preservam o histórico e os fundamentos, incluindo pendências
+que entretanto foram encerradas. O registo privado do painel já não é pendência.
+
 ## Evidência e integridade
 
 Ficheiro recebido: `Supabase Snippet Untitled query.csv`, 54 106 bytes,

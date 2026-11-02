@@ -1,5 +1,33 @@
 # Modelo, segurança e matriz de acesso
 
+## Prontidão vigente da Etapa B
+
+O responsável concluiu e guardou privadamente baseline-fase1-painel.txt. Estão
+confirmados signup público e acessos anónimos desactivados, confirmação de email
+activa, mínimo de 12 caracteres para palavras-passe, Site URL http://localhost:3000,
+nenhuma Redirect URL adicional, SMTP personalizado desactivado e 2 emails/hora.
+Foram registados fornecedores, sessões, parâmetros de tokens, limites e notificações.
+Não se solicitou o ficheiro privado nem valores de credenciais/tokens reais.
+
+A baseline real foi analisada sem colisões efectivas identificadas. O registo
+privado do painel está concluído por confirmação do responsável. Localhost e
+SMTP/limites não bloqueiam execução ou compensação SQL; devem ser considerados
+na homologação futura dos fluxos de autenticação. Não se alteram agora essas opções.
+
+**NÃO APTO ainda para solicitar autorização da Etapa B:** os resultados repetidos
+continuam a ser apenas a segunda grelha de propriedade. Faltam as nove linhas
+objecto/estado de supabase/inspection/fase1-operator-checks.sql e o resultado de
+supabase/inspection/fase1-drop-trigger-permission.sql. A pertença ao papel
+supabase_privileged_role não substitui estas verificações. A ausência destes
+resultados é lacuna de evidência, não prova de um bloqueio efectivo do projecto.
+
+Mantidos a migração original e SHA-256
+56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58,
+o procedimento compensatório e as dependências. Nenhuma execução remota,
+criação de contas, alteração Auth, publicação ou merge na main. As secções abaixo
+incluem histórico de verificações e pendências já encerradas; este resumo e a
+[análise actualizada](analise-baseline-real.md) prevalecem para o estado vigente.
+
 ## Entidades e integridade
 
 profiles referencia auth.users por UUID e guarda nome, e-mail e estado activo/inactivo/suspenso. Uma conta criada ou já existente na aplicação da migração começa inactiva, sem concessões. A activação não atribui um perfil automaticamente.
