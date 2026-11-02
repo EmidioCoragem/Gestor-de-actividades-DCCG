@@ -207,3 +207,13 @@ O responsável confirmou expressamente que o ficheiro é do projecto novo de des
 Foram preparados [guia passo a passo](guia-registo-painel.md) e [modelo preenchível](modelo-registo-painel.txt). O modelo deve ser preenchido e guardado apenas privadamente; não se solicita publicação de credenciais, ficheiros completos de configuração ou screenshots com segredos. O guia permite registar opções não localizadas/indisponíveis no Free sem as activar ou contratar recursos.
 
 Pendências vigentes reduzidas a: completar o registo privado do painel e rever as duas grelhas da consulta de privilégios do operador. Não se pede nova confirmação da identidade/cópia já fornecida, nem nova exportação integral da baseline se não houve alterações. A conclusão global continua NÃO APTO para solicitar a Etapa B até resolver essas duas pendências; o inventário real foi aceite sem BLOQUEIO efectivo identificado no seu âmbito.
+
+### Segunda grelha de permissões recebida
+
+O responsável reportou postgres como operador e proprietário da base, supabase_auth_admin como proprietário de auth.users, ausência de herança desse proprietário e pertença efectiva ao papel supabase_privileged_role. Estes metadados são compatíveis com Supabase e não bloqueiam por si a migração. A primeira grelha com os nove checks ainda não foi recebida; consulta executada sem erro não significa nove checks OK.
+
+Para a recuperação, a remoção explícita do trigger em auth.users exige comprovar a autorização apropriada de uma tabela de outro proprietário. A pertença ao papel privilegiado não prova a configuração específica supautils.drop_trigger_grants documentada pelo Supautils. Preparada supabase/inspection/fase1-drop-trigger-permission.sql, apenas de leitura de uma configuração não secreta, sem alterações ou DROP. A [análise detalhada](analise-baseline-real.md) distingue estes pontos.
+
+Mantém-se NÃO APTO para solicitar a Etapa B enquanto faltarem a primeira grelha, a confirmação de remoção do trigger no procedimento gerido e o registo privado do painel. O responsável está a preparar o registo. Não se alteraram proprietários, roles, configurações, migração, recuperação ou o Supabase.
+
+A primeira grelha pode ser obtida isoladamente com [fase1-operator-checks.sql](../../supabase/inspection/fase1-operator-checks.sql), que devolve apenas os nove checks. Isto evita perder a primeira grelha quando o SQL Editor apresenta apenas o ultimo SELECT.

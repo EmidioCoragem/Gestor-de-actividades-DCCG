@@ -144,3 +144,44 @@ Riscos residuais: recuperação limitada ao estado sem uso após migração, ser
 Supabase não simulados localmente, manutenção das dependências de desenvolvimento
 e homologação Auth/SMTP/cookies/RLS/PostgREST ainda pendentes. Nada foi executado
 ou alterado remotamente, nenhuma conta foi criada e não houve merge na main.
+
+## Complemento recebido — propriedade e papel privilegiado
+
+O responsável enviou a segunda grelha de fase1-operator-permissions.sql:
+database=postgres, operador=postgres, database_owner=postgres,
+auth_users_owner=supabase_auth_admin, herda_papel_owner_auth_users=false,
+herda_papel_privilegiado_supabase=true. São metadados compatíveis com a separação
+habitual de papéis geridos Supabase. Não se exige mudar o proprietário de auth.users
+ou conceder o papel supabase_auth_admin a postgres.
+
+Ser proprietário da base não confere automaticamente propriedade das tabelas de
+outros papéis. O resultado de pertença ao papel privilegiado não demonstra os
+nove privilégios efectivos da primeira grelha, ainda não recebida. A execução da
+consulta sem erro apenas comprova que foi possível consultar os metadados.
+
+A migração cria objectos próprios em public, referencia auth.users(id), lê contas
+existentes e cria auth_user_profile. A sua compatibilidade depende dos checks de
+CREATE/USAGE, SELECT/TRIGGER/REFERENCES e EXECUTE da primeira grelha. O false de
+herança do proprietário Auth não é, por si, BLOQUEIO dessa migração.
+
+O procedimento compensatório contém DROP TRIGGER auth_user_profile ON auth.users
+RESTRICT. A [documentação Supautils](https://github.com/supabase/supautils#table-ownership-bypass)
+documenta autorização específica de remoção de triggers sem propriedade através
+de supautils.drop_trigger_grants. Não se pode deduzir essa configuração apenas de
+herda_papel_privilegiado_supabase=true. A [documentação de papéis Supabase](https://supabase.com/docs/guides/database/postgres/roles-superuser)
+também distingue postgres de superuser irrestrito.
+
+Foi preparada fase1-drop-trigger-permission.sql para ler apenas essa configuração
+não secreta. Não executa DROP TRIGGER nem altera configurações. Rever o valor e
+se cobre o operador postgres e auth.users; NULL, configuração vazia ou erro de
+permissão não constituem prova de autorização. Se essa prova não estiver disponível,
+manter o procedimento de recuperação como não confirmado no ambiente gerido;
+não efectuar operações remotas para testar sem autorização própria. PGlite não
+reproduz os mecanismos de autorização internos Supautils.
+
+Conclusão deste complemento: **metadados compatíveis; validação de privilégios e
+da recuperação ainda incompleta**. Continuam pendentes a primeira grelha com os
+nove checks, a confirmação específica de remoção do trigger e o registo privado
+do painel em preparação. Nenhum ficheiro de migração ou recuperação foi alterado.
+
+A primeira grelha pode ser obtida isoladamente com [fase1-operator-checks.sql](../../supabase/inspection/fase1-operator-checks.sql), que devolve apenas os nove checks. Isto evita perder a primeira grelha quando o SQL Editor apresenta apenas o ultimo SELECT.
