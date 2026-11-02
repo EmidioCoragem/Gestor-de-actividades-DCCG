@@ -168,3 +168,21 @@ O runner resolve as limitações locais de portas sem modificar a segurança do 
 - A Etapa B não foi executada. Bootstrap e homologação real de Auth/SMTP/cookies e RLS/PostgREST aguardam autorização e execução no projecto de desenvolvimento.
 
 Esta secção final é uma actualização exclusivamente documental posterior ao commit validado acima. O SHA dos ensaios é 8b2ade6; o commit documental que regista estes resultados não altera código, SQL, dependências ou testes. O SHA-256 da migração permanece 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58.
+
+## Prontidão da Etapa B — baseline e recuperação no plano gratuito
+
+Foi preparado o [procedimento de baseline e recuperação](baseline-e-recuperacao.md), com fontes oficiais Supabase, instruções de painel para o operador, distinção entre SQL/serviços/recriação e limites do plano gratuito. Não é necessário contratar recursos pagos para esta preparação.
+
+Ficheiros novos:
+
+- supabase/inspection/fase1-baseline.sql: consulta READ ONLY que produz 15 linhas de contexto, contagens e inventário de relações, colunas, funções, triggers, ACLs, extensões, event triggers, políticas, índices, constraints e papéis. Não recolhe passwords/tokens/chaves nem exporta contas ou definições completas de funções. Os resultados reais devem ficar em armazenamento privado, fora do repositório público.
+- supabase/recovery/fase1-empty-baseline.sql: transacção compensatória específica, para autorização separada após COMMIT, removendo só os objectos enumerados da Fase 1. Não é backup integral. Tem confirmação explícita do operador, locks, verificação de contas Auth/Storage/dados e comparação do conteúdo dos catálogos iniciais. Remove explicitamente as políticas com referências cruzadas e usa DROP RESTRICT, sem CASCADE.
+- tests/unit/migration-recovery.test.ts: sete casos de PostgreSQL local isolado via PGlite. Verificam recuperação após o COMMIT original, igualdade do inventário anterior, preservação de objectos/dados testemunho, reaplicação local e seis recusas: sem confirmação, conta Auth, Storage, dados de uso, catálogo alterado ou dependência adicional. A falha tardia por dependência é seguida de ROLLBACK e conserva o estado completo.
+
+Evidência local final: lint e TypeScript aprovados; **57 testes aprovados em 7 ficheiros**, incluindo todos os 50 anteriores. PGlite usa tabelas Auth/Storage mínimas de teste; não homologa os serviços geridos Supabase ou o restauro de ficheiros. O build e os 42 testes de navegador aprovados anteriormente referem-se ao commit 8b2ade6 e ao código da aplicação, que esta preparação não altera; não foram repetidos nesta revisão.
+
+A migração mantém o SHA-256 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58. Não há alterações em package.json/package-lock.json, configurações Auth, serviços pagos ou main. Nenhuma consulta ou escrita foi executada no Supabase remoto nesta preparação.
+
+**Conclusão actual: NÃO APTO ainda para solicitar autorização da Etapa B.** O método gratuito e o ensaio local estão preparados e validados, mas não foi recebida/revista a baseline real exportada do SQL Editor nem o registo das configurações não secretas do painel. Os zeros Auth e a ausência de colisões continuam baseados no resultado anterior fornecido pelo responsável; a existência/ausência actual de Storage e de outros objectos personalizados não foi presumida. Falta apenas executar os passos de leitura/documentação do guia e rever os resultados para decidir se a recuperação limitada é aplicável.
+
+Riscos residuais: o inventário é comprovativo, não reconstitui definições/dados arbitrários; a compensação só serve antes de qualquer uso/alteração posterior; dependências dinâmicas requerem revisão humana; alterações/perda de infraestrutura gerida podem exigir suporte ou recriação com configurações manuais; vulnerabilidades de ferramentas de desenvolvimento e homologação real Auth/RLS/PostgREST continuam pendentes. Não se usará ROLLBACK como promessa de desfazer um COMMIT.
