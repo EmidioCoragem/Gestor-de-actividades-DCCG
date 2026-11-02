@@ -1,0 +1,48 @@
+MODELO — copiar e preencher PRIVADAMENTE; nao enviar o registo preenchido ao Git.
+Registar o que existe. Nao alterar opcoes nem guardar mudancas no Supabase.
+Nao incluir passwords, API keys, JWT secrets, tokens, connection strings ou segredos SMTP/OAuth.
+
+Data/hora e fuso da verificacao: [preencher]
+Pessoa que verificou: [preencher privadamente]
+Nome do projecto de desenvolvimento: [preencher privadamente]
+Referencia do projecto: [preencher privadamente; nao e uma chave API]
+Plano: Free
+CSV baseline: Supabase Snippet Untitled query.csv
+SHA-256 CSV: 8af2560c6e7296d3d63498096ada927529de93959bc04251a11575dd1a15068d
+Projecto correcto e copia privada adicional: confirmados pelo responsavel
+
+AUTH — confirmacoes ja fornecidas pelo responsavel:
+Registo publico: desactivado
+Acessos anonimos: desactivados
+Autenticacao por email: activa
+Confirmacao de email: obrigatoria
+
+AUTH — restantes valores observados no painel:
+Outros fornecedores activos (nomes apenas): [preencher / nenhum / nao verificado]
+Minimo de caracteres da palavra-passe: [valor observado / nao encontrado]
+Regras de composicao da palavra-passe: [valor observado / nao encontrado]
+Confirmacao segura de mudanca de email: [valor observado / nao encontrado]
+Site URL exacto: [valor observado; se vier localhost, manter no registo]
+Redirect URLs: [uma por linha / lista vazia]
+SMTP personalizado: [activado / desactivado / nao verificado]
+Se SMTP activo, fornecedor/host/porta/remetente: [dados nao secretos, privadamente]
+Segredo SMTP: NAO COPIADO; permanece no meio seguro do operador
+Modelo de convite: [padrao confirmado / personalizado / nao determinado]
+Modelo de recuperacao: [padrao confirmado / personalizado / nao determinado]
+Se personalizados, caminho das copias privadas estaticas: [preencher / nao aplicavel]
+Outros modelos personalizados: [nomes / nenhum / nao determinado]
+Sessions: [valores visiveis / sem personalizacao confirmada / nao verificado]
+Rate limits: [valores visiveis / sem personalizacao confirmada / nao verificado]
+MFA/Attack protection: [valores visiveis / nao utilizado / indisponivel no Free / nao verificado]
+Auth Hooks / Third Party Auth: [nomes ou estados, sem segredos / nao utilizado / nao verificado]
+
+OUTROS SERVICOS — sem abrir areas de chaves:
+Edge Functions personalizadas: [nenhuma / nomes / nao verificado]
+Realtime personalizado: [nenhum / descricao nao secreta / nao verificado]
+Outras personalizacoes de API/extensoes: [nenhuma / descricao nao secreta / nao verificado]
+
+Valores que nao consegui localizar: [listar; nao presumir valores por defeito]
+Houve alteracoes no projecto desde a baseline? [nao / sim: descrever sem segredos]
+Foi criada conta, ficheiro Storage ou dado da aplicacao? [nao / sim]
+Nenhuma opcao alterada durante este registo: [confirmar]
+Segunda copia privada do registo guardada: [confirmar]

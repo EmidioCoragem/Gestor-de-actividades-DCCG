@@ -150,9 +150,17 @@ tentativas detectaram uma ambiguidade de sintaxe no novo SQL e a dependência
 cruzada das políticas RLS; ambas foram corrigidas no ficheiro de recuperação,
 sem alterar a migração. O resultado de 57 aprovados refere-se aos ficheiros finais.
 
-**NÃO APTO ainda para solicitar execução remota:** o procedimento e o ensaio
-podem ser validados localmente, mas a baseline real exportada e o registo manual
-do painel ainda não foram recebidos/revistos. Estes são passos de leitura e
-documentação, gratuitos. Quando forem concluídos sem divergências, reavaliar
-APTIDÃO limitada à primeira migração, sem confundir isso com homologação de Auth
-ou prontidão de produção. Não foi contratado nenhum recurso pago.
+Actualização: a baseline real foi recebida e revista, sem conflito impeditivo
+identificado nos objectos/dados inventariados. A análise vigente está em
+[analise-baseline-real.md](analise-baseline-real.md), incluindo o hash do CSV.
+**NÃO APTO ainda para solicitar execução remota:** faltam as confirmações do
+registo privado completo do painel e a revisão dos privilégios
+efectivos do operador, que o inventário não exporta. São passos gratuitos de
+leitura/documentação; não é necessário repetir todo o inventário se o projecto
+não mudou. APTIDÃO para a primeira migração não equivale a homologação de Auth ou
+prontidão de produção. Não foi contratado nenhum recurso pago.
+
+Identidade do projecto, cópia privada adicional e quatro estados Auth foram
+confirmados pelo responsável após a análise do CSV. O
+[guia passo a passo](guia-registo-painel.md) e o
+[modelo](modelo-registo-painel.txt) orientam a recolha restante sem alterar o painel.
