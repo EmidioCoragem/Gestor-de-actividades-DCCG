@@ -44,11 +44,14 @@ test("entrada sem registo público nem credenciais fictícias", async ({
     page.getByRole("button", { name: "Enviar instruções" }),
   ).toBeDisabled();
 });
-test("callback inválido não cria sessão", async ({ page }) => {
-  await page.goto(
+test("callback inválido não cria sessão", async ({ request }) => {
+  const response = await request.get(
     "/auth/confirm?token_hash=invalid&type=signup&next=https://example.invalid",
+    { maxRedirects: 0 },
   );
-  await expect(page).toHaveURL(/\/entrar\?erro=ligacao-invalida$/);
+  expect(response.status()).toBe(303);
+  expect(response.headers().location).toBe("https://preview.example.invalid/entrar?erro=ligacao-invalida");
+  expect(response.headers()["set-cookie"]).toBeUndefined();
 });
 test("actualização de palavra-passe não disponível sem configuração", async ({
   page,

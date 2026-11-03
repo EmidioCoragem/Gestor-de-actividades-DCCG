@@ -1,10 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",
+  testIgnore: "**/auth-local-flow.spec.ts",
   fullyParallel: true,
   use: {
     baseURL: "http://127.0.0.1:3000",
-    trace: "retain-on-failure",
+    // Esta suite é offline; não recolher artefactos que possam guardar sessões.
+    trace: "off",
+    screenshot: "off",
+    video: "off",
     launchOptions: {
       executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
     },
@@ -28,6 +32,7 @@ export default defineConfig({
       NEXT_PUBLIC_SUPABASE_URL: "",
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "",
       SUPABASE_SERVICE_ROLE_KEY: "",
+      APP_ORIGIN: "https://preview.example.invalid",
     },
     timeout: 120_000,
   },

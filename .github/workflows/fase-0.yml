@@ -36,3 +36,7 @@ jobs:
         run: npm run test:e2e
         env:
           CI: "true"
+      - name: Testar confirmação e palavra-passe com Auth fictício local
+        run: npx playwright test --config=playwright.auth-local.config.ts
+        env:
+          CI: "true"

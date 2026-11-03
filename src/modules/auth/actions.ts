@@ -43,10 +43,15 @@ export async function recoverAccess(
   } catch {
     return { message: "O endereço de recuperação ainda não está configurado." };
   }
-  const db = await createSupabaseServerClient();
-  await db.auth.resetPasswordForEmail(email.data, {
-    redirectTo: `${origin}/auth/confirm`,
-  });
+  try {
+    const db = await createSupabaseServerClient();
+    await db.auth.resetPasswordForEmail(email.data, {
+      redirectTo: `${origin}/auth/confirm`,
+    });
+  } catch {
+    // A mesma resposta para endereço inexistente, limite ou falha de transporte.
+    // Não registar endereço, ligação de recuperação ou excepção do fornecedor.
+  }
   return {
     message:
       "Se existir uma conta autorizada, receberá as instruções de recuperação.",
@@ -67,21 +72,30 @@ export async function changePassword(
     return {
       message: "Use pelo menos 12 caracteres e confirme a mesma palavra-passe.",
     };
-  const db = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await db.auth.getUser();
-  if (!user)
-    return { message: "A ligação expirou. Solicite uma nova recuperação." };
-  const { error } = await db.auth.updateUser({
-    password: values.data.password,
-  });
-  if (error)
+  try {
+    const db = await createSupabaseServerClient();
+    const {
+      data: { user },
+      error: userError,
+    } = await db.auth.getUser();
+    if (userError || !user)
+      return { message: "A ligação expirou. Solicite uma nova recuperação." };
+    const { error } = await db.auth.updateUser({ password: values.data.password });
+    if (error)
+      return {
+        message: "Não foi possível actualizar a palavra-passe. Solicite nova ligação se necessário.",
+      };
+    const { error: signOutError } = await db.auth.signOut();
+    if (signOutError)
+      return {
+        message: "A palavra-passe foi actualizada, mas não foi possível terminar a sessão. Termine a sessão antes de continuar.",
+      };
+  } catch {
     return {
-      message:
-        "Não foi possível actualizar a palavra-passe. Solicite nova ligação se necessário.",
+      message: "Não foi possível concluir a operação. Verifique o estado da sessão antes de repetir.",
     };
-  await db.auth.signOut();
+  }
+  // redirect lança uma excepção de controlo Next.js; fica fora do catch.
   redirect("/entrar?mensagem=palavra-passe-actualizada");
 }
 export async function signOut() {

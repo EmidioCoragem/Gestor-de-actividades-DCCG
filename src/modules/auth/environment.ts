@@ -19,11 +19,18 @@ export function applicationOrigin() {
     );
   const url = new URL(value);
   if (
-    url.protocol !== "https:" &&
-    !(
-      url.protocol === "http:" &&
-      ["localhost", "127.0.0.1"].includes(url.hostname)
-    )
+    value !== value.trim() ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash ||
+    url.pathname !== "/" ||
+    (url.protocol !== "https:" &&
+      !(
+        process.env.NODE_ENV !== "production" &&
+        url.protocol === "http:" &&
+        ["localhost", "127.0.0.1"].includes(url.hostname)
+      ))
   )
     throw new Error("Origem da aplicação inválida.");
   return url.origin;

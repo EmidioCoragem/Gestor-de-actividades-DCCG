@@ -2,6 +2,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { readSupabaseConfig } from "./config";
+import { applicationOrigin } from "@/modules/auth/environment";
 // O proxy renova cookies durante navegação; Server Actions e Route Handlers podem escrevê-los.
 export async function createSupabaseServerClient() {
   const config = readSupabaseConfig(
@@ -12,6 +13,11 @@ export async function createSupabaseServerClient() {
     throw new Error("Supabase de desenvolvimento ainda não configurado.");
   const store = await cookies();
   return createServerClient(config.url, config.key, {
+    auth: { debug: false },
+    cookieOptions: {
+      sameSite: "lax",
+      secure: new URL(applicationOrigin()).protocol === "https:",
+    },
     cookies: {
       getAll: () => store.getAll(),
       setAll: (values) => {

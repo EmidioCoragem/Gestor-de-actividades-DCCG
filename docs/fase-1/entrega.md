@@ -1,5 +1,9 @@
 # Relatório da Fase 1
 
+## Correcção de confirmação e recuperação — 3 de Novembro de 2026
+
+Preparada a [correcção SSR e o roteiro de recuperação de AT](etapa-c/correccao-confirmacao-e-recuperacao.md): origem canónica APP_ORIGIN, verificação servidor token_hash, modelos de convite/recuperação compatíveis com o painel, cookies Secure no HTTPS e protecções de logs/redireccionamentos. Os [resultados desta alteração](etapa-c/verificacao-correccao-auth.md) distinguem testes locais de homologação real. O responsável confirmou AT com email confirmado, perfil inactive e zero papéis; nenhuma operação Auth remota foi executada pelo assistente. Configurações do painel, recuperação por email e bootstrap continuam a exigir autorização separada.
+
 ## Preparação da Etapa C — 3 de Novembro de 2026
 
 O [plano de homologação funcional e de segurança](etapa-c/plano.md) define oito identidades fictícias, bootstrap separado AT/AF, isolamento entre dois departamentos, controlo de auto-elevação, sessões, convites, recuperação, auditoria e limpeza. Os mecanismos PGlite e descritores PostgREST não executam operações remotas. A homologação real continua pendente de autorização expressa para contas, dados, bootstrap, mutações e emails; não houve alterações Supabase, Auth/SMTP, publicação ou merge. O [registo de verificações desta preparação](etapa-c/verificacao-local.md) separa resultados locais de pendências reais.

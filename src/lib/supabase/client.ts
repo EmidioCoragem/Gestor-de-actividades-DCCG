@@ -8,5 +8,11 @@ export function createSupabaseBrowserClient() {
   );
   if (!config)
     throw new Error("Supabase de desenvolvimento ainda não configurado.");
-  return createBrowserClient(config.url, config.key);
+  return createBrowserClient(config.url, config.key, {
+    auth: { debug: false },
+    cookieOptions: {
+      sameSite: "lax",
+      secure: typeof window !== "undefined" && window.location.protocol === "https:",
+    },
+  });
 }
