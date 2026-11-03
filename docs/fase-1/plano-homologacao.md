@@ -1,6 +1,6 @@
 # Plano para concluir a Fase 1 no Supabase Free
 
-Estado: **preparado, não executado no projecto remoto**. A migração já foi aplicada
+Estado: **lote 1 de catálogo concluído/aceite; lotes funcionais preparados e não executados**. Ver [análise do CSV](analise-pos-migracao-real.md). A migração já foi aplicada
 uma vez pelo responsável. O plano não autoriza contas, dados de teste, bootstrap,
 mutações RPC, emails ou configurações Auth/SMTP. Cada lote de escrita exige nova
 autorização expressa. O custo previsto é zero; não se contrata SMTP, PITR ou compute.
@@ -9,7 +9,7 @@ autorização expressa. O custo previsto é zero; não se contrata SMTP, PITR ou
 
 | Lote | Trabalho | Dependência/autorização |
 | --- | --- | --- |
-| 1 — agora | Catálogos, relações, ACLs, funções e triggers por fase1-post-migration.sql | Só leitura; enviar CSV completo, sem segredos |
+| 1 — concluído | Catálogos, relações, ACLs, funções e triggers | CSV de 635 linhas aceite; falsos positivos do inspector resolvidos |
 | 2 | Preparar contas, bootstrap e dados sintéticos mínimos | Nova autorização para identidades e escritas; operador SQL autorizado |
 | 3 | Login, sessão, isolamento e mutações administrativas | Contas activadas com concessões explícitas; mutações de teste aprovadas |
 | 4 | Convites, recuperação e email | Destinatários de teste autorizados e entrega disponível; qualquer mudança de URLs/templates/SMTP depende de autorização própria |

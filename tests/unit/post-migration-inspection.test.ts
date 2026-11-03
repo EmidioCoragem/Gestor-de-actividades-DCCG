@@ -42,6 +42,38 @@ describe("Inspecção pós-migração exclusivamente de leitura", () => {
     } finally { await db.exec("alter table public.profiles enable row level security"); }
   });
 
+  it("compara NOT NULL por coluna sem depender das entradas n de pg_constraint no PG18", async () => {
+    const before = await inspect();
+    expect(before.filter((r) => r.categoria === "01_catalogo_constraint" &&
+      (r.detalhe.actual as { type: string })?.type === "n")).toHaveLength(0);
+    await db.exec("alter table public.profiles alter column full_name drop not null");
+    try {
+      const changed = (await inspect()).find((r) => r.categoria === "01_catalogo_column" && r.objecto === "public.profiles.full_name");
+      expect(changed?.estado).toBe("REVER");
+      expect(changed?.detalhe.actual).toMatchObject({ not_null: false });
+    } finally {
+      await db.exec("alter table public.profiles alter column full_name set not null");
+    }
+  });
+
+  it("aceita CRLF em todas as funções sem deixar de detectar alterações de código", async () => {
+    const definitions = (await db.query<{ definition: string }>(`
+      select pg_get_functiondef(p.oid) as definition from pg_proc p
+      join pg_namespace n on n.oid=p.pronamespace where n.nspname='public'
+      and p.prokind='f' order by p.proname
+    `)).rows;
+    expect(definitions).toHaveLength(12);
+    try {
+      for (const row of definitions) await db.exec(row.definition.replaceAll("\n", "\r\n"));
+      const rows = await inspect();
+      expect(rows.filter((r) => ["REVER", "BLOQUEIO"].includes(r.estado))).toEqual([]);
+      const rpc = rows.find((r) => r.categoria === "06_RPC" && r.objecto === "public.is_active_user()");
+      expect(rpc?.detalhe.source_md5_raw).not.toBe(rpc?.detalhe.source_md5_lf);
+    } finally {
+      for (const row of definitions) await db.exec(row.definition);
+    }
+  });
+
   it("detecta concessões de tabela a PUBLIC e DML por coluna", async () => {
     await db.exec("grant select on public.profiles to public; grant update(email) on public.profiles to authenticated");
     try {

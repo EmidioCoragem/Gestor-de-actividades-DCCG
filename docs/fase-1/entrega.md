@@ -2,7 +2,7 @@
 
 ## Actualização vigente — 3 de Novembro de 2026
 
-O responsável confirmou a execução única e autorizada da migração original no Supabase de desenvolvimento: Success. No rows returned. Validação posterior reportada: 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis. Estrutura principal validada pelo operador; privilégios/relações/RPCs detalhados e homologação real ainda pendentes. Não reaplicar a migração.
+O responsável confirmou a execução única e autorizada da migração original no Supabase de desenvolvimento: Success. No rows returned. Validação posterior reportada: 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis. Estrutura principal validada pelo operador; a auditoria de catálogo/ACLs do CSV real foi entretanto aceite, com falsos positivos de NOT NULL/CRLF resolvidos (ver analise-pos-migracao-real.md). A homologação real com contas continua pendente de nova autorização. Não reaplicar a migração.
 
 A migração mantém SHA-256 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58. Seguir [validacao-pos-migracao.md](validacao-pos-migracao.md) para a única consulta de leitura e [plano-homologacao.md](plano-homologacao.md) para os testes futuros. Nenhuma conta, alteração SMTP/Auth, publicação ou merge foi autorizada nesta preparação. O assistente não executou a migração remota.
 

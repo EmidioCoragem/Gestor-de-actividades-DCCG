@@ -22,6 +22,8 @@ WITH relations AS (
  jsonb_build_object('type',k.contype,'validated',k.convalidated,
    'definition',pg_get_constraintdef(k.oid,true))
  FROM relations c JOIN pg_constraint k ON k.conrelid=c.oid
+ -- NOT NULL de tabelas: attnotnull acima e portavel entre PG17 e PG18.
+ WHERE k.contype<>'n'
  UNION ALL
  SELECT 'index','public.'||ic.relname,
  jsonb_build_object('definition',pg_get_indexdef(i.indexrelid),
@@ -39,7 +41,8 @@ WITH relations AS (
  UNION ALL
  SELECT 'function',n.nspname||'.'||p.proname||'('||oidvectortypes(p.proargtypes)||')',
  jsonb_build_object('owner',pg_get_userbyid(p.proowner),'definer',p.prosecdef,
-   'volatility',p.provolatile,'config',p.proconfig,'source_md5',md5(p.prosrc),
+   'volatility',p.provolatile,'config',p.proconfig,
+   'source_md5_lf',md5(replace(p.prosrc,chr(13)||chr(10),chr(10))),
    'arguments',pg_get_function_arguments(p.oid),'result',pg_get_function_result(p.oid))
  FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
  WHERE n.nspname='public' AND p.prokind IN ('f','p')

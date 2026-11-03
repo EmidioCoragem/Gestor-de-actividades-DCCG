@@ -3,6 +3,9 @@
 -- APENAS LEITURA. Nao reaplica a migracao nem chama RPCs da aplicacao.
 -- Exportar a UNICA grelha completa para CSV, incluindo OK/REVER/BLOQUEIO/INFO.
 -- Comparacoes de definicao podem exigir revisao de normalizacao entre versoes PG.
+-- NOT NULL e verificado em pg_attribute.attnotnull (comum a PG17/18),
+-- nao por entradas contype=n de pg_constraint introduzidas em tabelas no PG18.
+-- Corpos de funcoes: normaliza somente CRLF para LF, sem retirar outro texto.
 BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY;
 WITH expected(kind,object,detail) AS (
  VALUES
@@ -99,7 +102,8 @@ WITH expected(kind,object,detail) AS (
  'anon_execute',has_function_privilege('anon',p.oid,'EXECUTE'),
  'authenticated_execute',has_function_privilege('authenticated',p.oid,'EXECUTE'),
  'authenticated_execute_esperado',r.signature IS NOT NULL,
- 'source_md5',md5(p.prosrc),
+ 'source_md5_raw',md5(p.prosrc),
+ 'source_md5_lf',md5(replace(p.prosrc,chr(13)||chr(10),chr(10))),
  'observacao','A consulta nao executa a funcao. Ver tambem correspondencia de corpo/argumentos em catalogo_function.')
  FROM functions p LEFT JOIN allowed_rpc r ON r.signature=p.signature
  UNION ALL

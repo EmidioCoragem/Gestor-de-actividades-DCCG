@@ -1,6 +1,6 @@
 # Modelo, segurança e matriz de acesso
 
-## Estado vigente — migração executada; homologação em curso
+## Estado vigente — catálogo pós-migração aceite; homologação funcional pendente
 
 Em 3 de Novembro de 2026, o responsável confirmou ter autorizado e executado uma
 única vez a migração original no novo projecto Supabase exclusivamente de
@@ -8,23 +8,31 @@ desenvolvimento. O SQL Editor devolveu Success. No rows returned. A validação
 posterior reportou 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis.
 A hora exacta da execução não foi fornecida. **Não reaplicar a migração.**
 
-A estrutura principal fica registada como validada pelo operador. A revisão
-remota detalhada de relações, definições, privilégios efectivos, RPCs e triggers
-continua pendente: os quatro totais não comprovam esses elementos. Nesta sessão
-não existe conector SQL autorizado; o assistente preparou a consulta exclusiva
-de leitura e não se ligou ao Supabase ou recolheu credenciais.
+A estrutura principal e a auditoria detalhada de catálogo/ACLs estão aceites com
+base no CSV completo recebido: 635 linhas, SHA-256
+7cd7d33683d6a7ed4c9ea2ee693bf1dce4eecfcee5e7d5abb09ac746392c44bc.
+Os 76 BLOQUEIO eram entradas NOT NULL esperadas em pg_constraint pelo PGlite 18.6,
+mas representadas em pg_attribute no Supabase 17.11; as 76 colunas têm NOT NULL.
+Os 12 REVER eram hashes de funções com CRLF em vez de LF: as 12 coincidem com a
+variante CRLF do original e todos os outros metadados coincidem. Os alertas eram
+falsos positivos do inspector, corrigido sem alterar a base de dados.
 
-Ver [validação pós-migração](validacao-pos-migracao.md), a consulta
-[supabase/inspection/fase1-post-migration.sql](../../supabase/inspection/fase1-post-migration.sql)
-e o [plano de homologação](plano-homologacao.md). O SQL de leitura compara
-338 objectos de referência, relações/índices, 13 políticas, 12 funções e 17 triggers,
-privilégios de tabela/coluna, execução de RPCs, catálogos iniciais e contagens sem
-dados pessoais. Só com o CSV real se poderá confirmar a correspondência remota.
-O assistente não declara ausência de exposições no remoto com base nos totais.
+Ver [análise do CSV real](analise-pos-migracao-real.md), [validação pós-migração](validacao-pos-migracao.md)
+e [plano de homologação](plano-homologacao.md). Relações, políticas, triggers,
+privilégios efectivos de tabela/coluna e RPCs foram conferidos no CSV, incluindo
+comparação com a referência do repositório. Não se identificaram exposições
+indevidas ou alertas inexplicados no âmbito de catálogo/ACLs desta captura.
+Não houve consulta directa ou escrita do assistente no Supabase.
+
+O inspector corrigido usa 262 objectos portáveis, verifica NOT NULL pelas 100
+colunas e normaliza apenas CRLF→LF nos hashes de funções. Mantém a detecção de
+alterações reais de código, colunas, políticas e privilégios. A exportação já
+recebida foi integralmente analisada; não se exige nova execução para resolver
+estes alertas. Pode-se propor o lote de contas/bootstrap, sujeito a nova autorização.
 
 No original, anon/PUBLIC não recebem execução das funções da aplicação, sete RPCs
 são concedidas a authenticated e a escrita directa administrativa é revogada.
-As verificações locais exercitam a detecção de desvios, mas não substituem a API
+A correspondência de catálogo e as verificações locais não substituem a API
 real com contas/âmbitos distintos. Delegations continua sem conceder poderes nesta
 fase; acesso ao próprio perfil inactivo é distinto de acesso funcional/terceiros.
 
@@ -42,7 +50,7 @@ não foram alterados. A compensação de baseline vazia não deve ser usada depo
 de criar contas/dados; uma recuperação remota exige autorização própria.
 
 **Fase 1 ainda não integralmente homologada nem pronta para produção.** Falta
-rever o CSV detalhado e executar os lotes autorizados do plano. O histórico abaixo
+executar os lotes de homologação depois de obter autorização para contas, bootstrap e testes. O histórico abaixo
 inclui o antigo estado APTO para solicitar Etapa B, entretanto executada pelo
 responsável; não constitui autorização para nova execução.
 

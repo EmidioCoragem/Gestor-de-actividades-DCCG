@@ -1,5 +1,11 @@
 # Validação pós-migração da Fase 1
 
+**Actualização vigente: CSV real recebido e auditoria de catálogo/ACLs aceite.**
+Ver [análise completa](analise-pos-migracao-real.md) para as 635 linhas e a
+resolução dos 76 falsos BLOQUEIO e 12 REVER por compatibilidade de catálogo e
+finais de linha. Não há divergência efectiva inexplicada; homologação com contas
+continua pendente de autorização. A consulta foi corrigida, sem alterações remotas.
+
 Registo de 3 de Novembro de 2026 (Africa/Luanda). Projecto novo exclusivamente de
 desenvolvimento; plano Free; sem dados reais da empresa. A hora exacta da execução
 não foi fornecida e não é presumida.
@@ -21,8 +27,7 @@ Validação posterior reportada:
 | trigger_perfis | 1 |
 
 Estado: **migração executada e estrutura principal validada por confirmação do
-operador**. Não se declara ainda auditado o conjunto de definições, privilégios,
-relações ou fluxos reais. A migração não será reaplicada. SHA-256 preservado:
+operador**. O catálogo/ACLs detalhados foram entretanto auditados no CSV; os fluxos reais continuam pendentes. A migração não será reaplicada. SHA-256 preservado:
 
 ```text
 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58
@@ -31,8 +36,7 @@ relações ou fluxos reais. A migração não será reaplicada. SHA-256 preserva
 O assistente não executou consultas no Supabase nesta revisão: não existe um
 conector SQL autorizado disponível na sessão. Não foi pedida connection string,
 password de base de dados ou chave service_role. Não se reutilizaram referências
-do projecto anterior. O responsável executará a consulta de leitura abaixo no
-projecto já confirmado e enviará apenas a exportação de catálogo/ACLs.
+do projecto anterior. O responsável executou a consulta no projecto confirmado e enviou a exportação de catálogo/ACLs, agora analisada. As instruções abaixo ficam para futuras verificações, não exigem repetir a captura actual.
 
 ## Uma consulta de leitura para a inspecção detalhada
 
@@ -50,7 +54,7 @@ de linhas de dados, além do cabeçalho. Se houver erro, enviar a mensagem sem
 segredos; não executar GRANT, ALTER, DROP ou a migração para o ultrapassar.
 
 A referência embutida foi obtida **apenas em PostgreSQL PGlite local em memória**,
-a partir do original com hash fixo. 338 objectos de catálogo compõem a referência:
+a partir do original com hash fixo. 262 objectos portáveis de catálogo compõem a referência corrigida:
 tabelas, colunas/defaults, constraints/chaves externas, índices, políticas,
 funções e triggers. O gerador reproduzível está em scripts/generate-fase1-postflight.mjs.
 O gerador não usa variáveis Supabase, credenciais ou rede; não serve para executar
@@ -113,8 +117,9 @@ A política profile_read permite consultar o próprio perfil mesmo inactivo; o
 servidor bloqueia rotas privadas e as funções exigem estado activo. Os testes devem
 distinguir essa leitura própria de acesso a dados funcionais ou a perfis de terceiros.
 
-**Não há exposição indevida identificada na análise estática das concessões do
-original; ainda não está confirmada a ausência de exposição no Supabase remoto.**
+**O CSV real confirma a correspondência de catálogo/ACLs e não revela exposição
+indevida no âmbito inspeccionado. A homologação comportamental pela API real
+continua pendente de contas e autorização.**
 Totais 16/16/13/1 não excluem um GRANT por coluna, uma política permissiva diferente,
 uma sobrecarga nova ou um corpo de função alterado. A consulta detalhada procura
 esses desvios; contas distintas e chamadas PostgREST são a prova comportamental
@@ -122,7 +127,7 @@ posterior. Não declarar RPCs seguras apenas por a migração ter terminado.
 
 ## Estado e próximos passos
 
-1. Executar/exportar apenas a consulta de leitura detalhada e rever os resultados.
+1. Concluído: CSV completo recebido e revisto; nenhum alerta efectivo inexplicado, ver analise-pos-migracao-real.md.
 2. Com aprovação separada, preparar as contas e o bootstrap definidos no
    [plano de homologação](plano-homologacao.md). Não criar contas agora.
 3. Com aprovação própria para eventuais alterações Auth/URLs/SMTP, preparar o
@@ -140,7 +145,7 @@ uma consulta de leitura com desfazer o COMMIT já efectuado.
 Identidade azul-escuro e contratos de Centros de Custo/SAP/Primavera preservados.
 Sem novos utilizadores remotos, alterações Auth/SMTP, publicação ou merge.
 
-## Evidência local desta preparação
+## Evidência local da preparação inicial — histórico
 
 - npm run lint e npm run typecheck: aprovados.
 - npm test: **65 testes aprovados em 8 ficheiros**. Aos 57 anteriores somam-se
@@ -157,4 +162,25 @@ Sem novos utilizadores remotos, alterações Auth/SMTP, publicação ou merge.
 - Sem alterações em package.json/package-lock.json, CSS/interface ou na migração.
   Não foram repetidos build/Playwright: a evidência anterior de build e 42 testes
   de navegador sem Supabase permanece histórica, não homologação autenticada.
-- O sucesso dos testes locais não altera a pendência do CSV real pós-migração.
+- Nesta preparação inicial o CSV real ainda estava pendente; foi depois recebido
+  e aceite na análise ligada no início deste relatório.
+
+
+## Correcção de compatibilidade após recepção do CSV
+
+A referência inicial usava PGlite 18.6 e produziu 76 falsos BLOQUEIO para entradas
+NOT NULL de pg_constraint ausentes no PostgreSQL 17.11 do projecto. Todas as 76
+colunas estavam efectivamente NOT NULL. A consulta corrigida verifica essa
+obrigatoriedade em attnotnull, mantendo PK/FK/UNIQUE/CHECK em pg_constraint.
+
+Os 12 hashes de corpos divergentes coincidem com a variante CRLF do original;
+nenhum outro metadado de função difere. A comparação passou a normalizar somente
+CRLF→LF, mantendo o hash bruto na secção RPC. Não se retiram outros espaços,
+comentários ou código. Foram acrescentados dois testes de regressão: todos os
+corpos em CRLF são aceites; a remoção real de NOT NULL continua detectada.
+
+Resultado local final: lint e TypeScript aprovados, **67 testes aprovados em
+8 ficheiros**. A evidência anterior de 65 é histórica, anterior a esta correcção.
+O CSV original não foi alterado nem a consulta corrigida executada remotamente.
+Não é necessário reaplicar a migração ou repetir a exportação para aceitar a
+análise já concluída. Nenhuma conta/alteração Auth/SMTP foi executada.
