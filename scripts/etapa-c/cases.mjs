@@ -1,0 +1,38 @@
+import { people as p, units as u } from "./fixture.mjs";
+const q=(sql,params=[])=>({sql,params});
+const rpc=(operation,payload)=>q("select public.admin_mutation($1,$2::jsonb)",[operation,JSON.stringify(payload)]);
+const unitSql="select code from public.organizational_units order by code";
+export const localCases=[
+  {id:"C-L01",actor:"anon",title:"Anónimo sem leitura de perfis",steps:[q("select id from public.profiles")],error:"42501"},
+  {id:"C-L02",actor:"GA",title:"A e descendente A1",steps:[q(unitSql)],rows:[{code:"C-DEP-A"},{code:"C-SEC-A1"}]},
+  {id:"C-L03",actor:"GB",title:"B sem A",steps:[q(unitSql)],rows:[{code:"C-DEP-B"}]},
+  {id:"C-L04",actor:"GA",title:"Perfis A isolados",steps:[q("select id from public.profiles order by id")],rows:["GA","CA","EST"].map(a=>({id:p[a]}))},
+  {id:"C-L05",actor:"GB",title:"Perfis B isolados",steps:[q("select id from public.profiles order by id")],rows:["GB","CB"].map(a=>({id:p[a]}))},
+  {id:"C-L06",actor:"GA",title:"Custos fictícios A",steps:[q("select code from public.cost_centers order by code")],rows:[{code:"000C-A"}]},
+  {id:"C-L07",actor:"GB",title:"Custos fictícios B",steps:[q("select code from public.cost_centers order by code")],rows:[{code:"000C-B"}]},
+  {id:"C-L08",actor:"AT",title:"Técnico sem administração funcional",steps:[q("select public.has_permission('users.manage',null) as users,public.has_permission('access.manage',null) as grants,public.has_permission('org.manage',null) as org,public.has_permission('activities.read',$1) as business",[u.ROOT])],rows:[{users:true,grants:false,org:false,business:false}]},
+  {id:"C-L09",actor:"AF",title:"Funcional sem users.manage nem dados operacionais",steps:[q("select public.has_permission('access.manage',null) as grants,public.has_permission('org.manage',null) as org,public.has_permission('users.manage',null) as users,public.has_permission('activities.read',$1) as business",[u.ROOT])],rows:[{grants:true,org:true,users:false,business:false}]},
+  {id:"C-L10",actor:"DIR",title:"Direcção A/B sem administração de acessos",steps:[q("select public.has_permission('activities.read',$1) as a,public.has_permission('activities.read',$2) as b,public.has_permission('access.manage',null) as grants",[u.A,u.B])],rows:[{a:true,b:true,grants:false}]},
+  {id:"C-L11",actor:"CA",title:"Colaborador A sem criação ou acesso B",steps:[q("select public.has_permission('activities.read',$1) as a,public.has_permission('activities.read',$2) as b,public.has_permission('activities.create',$1) as create",[u.A,u.B])],rows:[{a:true,b:false,create:false}]},
+  {id:"C-L12",actor:"CA",title:"Auto-elevação do colaborador recusada",steps:[rpc("grant_role",{user_id:p.CA,role_code:"director",unit_id:u.A})],error:"P0001"},
+  {id:"C-L13",actor:"AF",title:"Auto-concessão do administrador funcional recusada",steps:[rpc("grant_role",{user_id:p.AF,role_code:"director",unit_id:u.ROOT})],error:"P0001"},
+  {id:"C-L14",actor:"AF",title:"Não modifica capacidades do próprio papel",steps:[rpc("role_permission",{role_code:"access_admin",permission_code:"activities.read",enabled:true})],error:"P0001"},
+  {id:"C-L15",actor:"AT",title:"Técnico não concede papel funcional",steps:[rpc("grant_role",{user_id:p.CA,role_code:"director",unit_id:u.A})],error:"P0001"},
+  {id:"C-L16",actor:"CA",title:"Escrita directa recusada",steps:[q("update public.profiles set full_name='C Negativo' where id=$1",[p.CA])],error:"42501"},
+  {id:"C-L17",actor:"EST",title:"Inactivo sem capacidade, perfil próprio mínimo",steps:[q("select public.is_active_user() as active,public.has_permission('org.read',$1) as org,(select count(*)::int from public.profiles) as own_profiles",[u.A])],rows:[{active:false,org:false,own_profiles:1}]},
+  {id:"C-L18",actor:"GA",title:"Suspensão bloqueia capacidade com papel vigente",setup:[q("update public.profiles set status='suspended' where id=$1",[p.GA])],steps:[q("select public.is_active_user() as active,public.has_permission('activities.create',$1) as create",[u.A])],rows:[{active:false,create:false}]},
+  {id:"C-L19",actor:"CA",title:"Concessão expirada não concede poderes",setup:[q("insert into public.user_role_assignments(user_id,role_code,scope_unit_id,valid_from,valid_until) values($1,'manager',$2,now()-interval '2 days',now()-interval '1 day')",[p.CA,u.A])],steps:[q("select public.has_permission('activities.create',$1) as create",[u.A])],rows:[{create:false}]},
+  {id:"C-L20",actor:"AF",title:"Concessão legítima auditada com actor",steps:[rpc("grant_role",{user_id:p.CA,role_code:"manager",unit_id:u.A}),q("select actor_id,action,(before_data is null) as no_before,after_data->>'role_code' as role from public.audit_logs where actor_id=$1 and entity_type='user_role_assignments'",[p.AF])],rows:[{actor_id:p.AF,action:"INSERT",no_before:true,role:"manager"}]},
+  {id:"C-L21",actor:"CA",title:"Auditoria alheia não é visível",steps:[q("select id from public.audit_logs")],rows:[]},
+  {id:"C-L22",actor:"CA",title:"DELETE auditoria sem privilégio",steps:[q("delete from public.audit_logs where id='90000000-0000-4000-8000-000000000001'")],error:"42501"},
+  {id:"C-L23",actor:"AF",title:"Ciclo na árvore recusado",steps:[rpc("unit_update",{id:u.A,parent_id:u.A1,name:"Departamento Fictício A",active:true})],error:"P0001"},
+  {id:"C-L24",actor:"GA",title:"Grant de acesso A não alcança B",setup:[q("insert into public.user_role_assignments(user_id,role_code,scope_unit_id) values($1,'c_scope_access',$2)",[p.GA,u.A])],steps:[rpc("grant_role",{user_id:p.CB,role_code:"manager",unit_id:u.B})],error:"P0001"},
+  {id:"C-L25",actor:"CA",title:"Delegação não concede capacidade nesta versão",setup:[q("insert into public.delegations(from_user_id,to_user_id,permission_code,scope_unit_id,valid_from,valid_until) values($1,$2,'activities.create',$3,now()-interval '1 day',now()+interval '1 day')",[p.GA,p.CA,u.A])],steps:[q("select public.has_permission('activities.create',$1) as create",[u.A])],rows:[{create:false}]},
+  {id:"C-L26",actor:"GA",title:"Auxiliar privado não executável",steps:[q("select public.in_unit_scope($1,$2)",[u.A1,u.A])],error:"42501"},
+  {id:"C-L27",actor:"AF",title:"Reparenting não amplia concessão própria",setup:[q("insert into public.user_role_assignments(user_id,role_code,scope_unit_id) values($1,'manager',$2)",[p.AF,u.A])],steps:[rpc("unit_update",{id:u.A,parent_id:u.B,name:"Departamento Fictício A",active:true})],error:"P0001"},
+  {id:"C-L28",actor:"GA",title:"Sem autovalidação; terceiro no âmbito permitido",steps:[q("select public.may_validate_activity($1::uuid[],$3) as own,public.may_validate_activity($2::uuid[],$3) as third",[[p.GA],[p.CA],u.A])],rows:[{own:false,third:true}]},
+  {id:"C-L29",actor:"CB",title:"Colaborador B sem acesso A",steps:[q("select public.has_permission('activities.read',$1) as b,public.has_permission('activities.read',$2) as a,public.has_permission('activities.create',$1) as create",[u.B,u.A])],rows:[{b:true,a:false,create:false}]},
+  {id:"C-L30",actor:"DIR",title:"Direcção vê a árvore completa",steps:[q(unitSql)],rows:[{code:"C-DEP-A"},{code:"C-DEP-B"},{code:"C-EMP"},{code:"C-SEC-A1"}]},
+  {id:"C-L31",actor:"EST",title:"Activo sem papel não obtém capacidades",setup:[q("update public.profiles set status='active' where id=$1",[p.EST])],steps:[q("select public.is_active_user() as active,public.my_permissions() as capabilities")],rows:[{active:true,capabilities:[]}]},
+  {id:"C-L32",actor:"AF",title:"Administrador inactivo não executa mutação válida",setup:[q("update public.profiles set status='inactive' where id=$1",[p.AF])],steps:[rpc("unit_create",{code:"C-NOVA",name:"Unidade Fictícia Nova",kind:"team",parent_id:u.A})],error:"P0001"},
+];

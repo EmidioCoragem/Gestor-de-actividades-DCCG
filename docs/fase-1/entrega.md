@@ -1,5 +1,9 @@
 # Relatório da Fase 1
 
+## Preparação da Etapa C — 3 de Novembro de 2026
+
+O [plano de homologação funcional e de segurança](etapa-c/plano.md) define oito identidades fictícias, bootstrap separado AT/AF, isolamento entre dois departamentos, controlo de auto-elevação, sessões, convites, recuperação, auditoria e limpeza. Os mecanismos PGlite e descritores PostgREST não executam operações remotas. A homologação real continua pendente de autorização expressa para contas, dados, bootstrap, mutações e emails; não houve alterações Supabase, Auth/SMTP, publicação ou merge. O [registo de verificações desta preparação](etapa-c/verificacao-local.md) separa resultados locais de pendências reais.
+
 ## Actualização vigente — 3 de Novembro de 2026
 
 O responsável confirmou a execução única e autorizada da migração original no Supabase de desenvolvimento: Success. No rows returned. Validação posterior reportada: 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis. Estrutura principal validada pelo operador; a auditoria de catálogo/ACLs do CSV real foi entretanto aceite, com falsos positivos de NOT NULL/CRLF resolvidos (ver analise-pos-migracao-real.md). A homologação real com contas continua pendente de nova autorização. Não reaplicar a migração.

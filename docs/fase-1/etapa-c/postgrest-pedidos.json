@@ -1,0 +1,427 @@
+{
+  "executionMode": "DESCRIPTORS_ONLY_NO_HTTP_CLIENT",
+  "localFixtureIdsAreNotRemoteIds": true,
+  "remoteFixtureMap": "PRIVATE_APPROVED_UUID_MAP_REQUIRED",
+  "cases": [
+    {
+      "id": "C-API-01",
+      "actor": "GA",
+      "method": "GET",
+      "path": "/rest/v1/organizational_units?select=id,code,parent_id&order=code.asc",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GA}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [
+          "A",
+          "A1"
+        ]
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-02",
+      "actor": "GB",
+      "method": "GET",
+      "path": "/rest/v1/organizational_units?select=id,code,parent_id&order=code.asc",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GB}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [
+          "B"
+        ]
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-03",
+      "actor": "GA",
+      "method": "GET",
+      "path": "/rest/v1/organizational_units?id=eq.{{UNIT_B}}&select=id",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GA}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [],
+        "requiresKnownExistingAlias": "B"
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-04",
+      "actor": "GB",
+      "method": "GET",
+      "path": "/rest/v1/organizational_units?id=eq.{{UNIT_A}}&select=id",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GB}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [],
+        "requiresKnownExistingAlias": "A"
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-05",
+      "actor": "GA",
+      "method": "GET",
+      "path": "/rest/v1/profiles?select=id&order=id.asc",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GA}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [
+          "GA",
+          "CA",
+          "EST"
+        ]
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-06",
+      "actor": "GB",
+      "method": "GET",
+      "path": "/rest/v1/profiles?select=id&order=id.asc",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GB}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [
+          "GB",
+          "CB"
+        ]
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-07",
+      "actor": "CA",
+      "method": "GET",
+      "path": "/rest/v1/profiles?select=id",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CA}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [
+          "CA"
+        ]
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-08",
+      "actor": "CB",
+      "method": "GET",
+      "path": "/rest/v1/profiles?select=id",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CB}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": [
+          "CB"
+        ]
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-09",
+      "actor": "AT",
+      "method": "POST",
+      "path": "/rest/v1/rpc/has_permission",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_AT}}"
+      },
+      "body": {
+        "required": "activities.read",
+        "target": "{{UNIT_A}}"
+      },
+      "expected": {
+        "kind": "scalar",
+        "status": 200,
+        "value": false
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-10",
+      "actor": "AF",
+      "method": "POST",
+      "path": "/rest/v1/rpc/has_permission",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_AF}}"
+      },
+      "body": {
+        "required": "users.manage",
+        "target": null
+      },
+      "expected": {
+        "kind": "scalar",
+        "status": 200,
+        "value": false
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-11",
+      "actor": "DIR",
+      "method": "POST",
+      "path": "/rest/v1/rpc/has_permission",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_DIR}}"
+      },
+      "body": {
+        "required": "activities.read",
+        "target": "{{UNIT_B}}"
+      },
+      "expected": {
+        "kind": "scalar",
+        "status": 200,
+        "value": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-12",
+      "actor": "CA",
+      "method": "PATCH",
+      "path": "/rest/v1/profiles?id=eq.{{UUID_CA}}",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CA}}"
+      },
+      "body": {
+        "full_name": "C Negativo"
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          403
+        ],
+        "codes": [
+          "42501"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-13",
+      "actor": "CA",
+      "method": "POST",
+      "path": "/rest/v1/profiles",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CA}}"
+      },
+      "body": {
+        "id": "{{UUID_EST}}",
+        "full_name": "Fictício C EST",
+        "email": "{{EMAIL_EST_PRIVADO}}"
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          403
+        ],
+        "codes": [
+          "42501"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-14",
+      "actor": "CA",
+      "method": "DELETE",
+      "path": "/rest/v1/profiles?id=eq.{{UUID_EST}}",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CA}}"
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          403
+        ],
+        "codes": [
+          "42501"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-15",
+      "actor": "AF",
+      "method": "POST",
+      "path": "/rest/v1/rpc/admin_mutation",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_AF}}"
+      },
+      "body": {
+        "operation": "grant_role",
+        "payload": {
+          "user_id": "{{UUID_AF}}",
+          "role_code": "director",
+          "unit_id": "{{UNIT_ROOT}}"
+        }
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          400
+        ],
+        "codes": [
+          "P0001"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-16",
+      "actor": "AT",
+      "method": "POST",
+      "path": "/rest/v1/rpc/admin_mutation",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_AT}}"
+      },
+      "body": {
+        "operation": "grant_role",
+        "payload": {
+          "user_id": "{{UUID_CA}}",
+          "role_code": "director",
+          "unit_id": "{{UNIT_A}}"
+        }
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          400
+        ],
+        "codes": [
+          "P0001"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-17",
+      "actor": "CA",
+      "method": "POST",
+      "path": "/rest/v1/rpc/in_unit_scope",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CA}}"
+      },
+      "body": {
+        "target": "{{UNIT_A1}}",
+        "scope": "{{UNIT_A}}"
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          403,
+          404
+        ],
+        "codes": [
+          "42501",
+          "PGRST202"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-18",
+      "actor": "CA",
+      "method": "GET",
+      "path": "/rest/v1/audit_logs?select=id",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_CA}}"
+      },
+      "expected": {
+        "kind": "rows",
+        "status": 200,
+        "aliases": []
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-19",
+      "actor": "anon",
+      "method": "GET",
+      "path": "/rest/v1/profiles?select=id",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}"
+      },
+      "expected": {
+        "kind": "denial",
+        "statuses": [
+          401,
+          403
+        ],
+        "codes": [
+          "42501"
+        ],
+        "unchangedRequired": true
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    },
+    {
+      "id": "C-API-20",
+      "actor": "GA",
+      "method": "POST",
+      "path": "/rest/v1/rpc/has_permission",
+      "headers": {
+        "apikey": "{{PUBLISHABLE_KEY}}",
+        "Authorization": "Bearer {{JWT_GA}}"
+      },
+      "body": {
+        "required": "activities.create",
+        "target": "{{UNIT_A}}"
+      },
+      "expected": {
+        "kind": "scalar",
+        "status": 200,
+        "value": false,
+        "precondition": "GA_SUSPENDED_BY_APPROVED_OPERATOR"
+      },
+      "remoteExecution": "REQUIRES_NEW_AUTHORIZATION"
+    }
+  ]
+}

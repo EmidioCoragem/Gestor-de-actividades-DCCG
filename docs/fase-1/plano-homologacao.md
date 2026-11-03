@@ -1,5 +1,9 @@
 # Plano para concluir a Fase 1 no Supabase Free
 
+## Etapa C — plano detalhado vigente
+
+O [plano detalhado da Etapa C](etapa-c/plano.md) substitui a proposta inicial de cinco contas abaixo por oito identidades fictícias, com separação entre administração técnica e funcional, dois departamentos e mecanismos locais de ensaio. A proposta abaixo fica como histórico. Nenhuma conta ou mutação remota foi executada nesta preparação. Consultar também os [descritores PostgREST](etapa-c/postgrest-pedidos.json) e o [modelo de evidências](etapa-c/evidencias.csv).
+
 Estado: **lote 1 de catálogo concluído/aceite; lotes funcionais preparados e não executados**. Ver [análise do CSV](analise-pos-migracao-real.md). A migração já foi aplicada
 uma vez pelo responsável. O plano não autoriza contas, dados de teste, bootstrap,
 mutações RPC, emails ou configurações Auth/SMTP. Cada lote de escrita exige nova
