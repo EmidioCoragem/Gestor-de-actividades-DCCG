@@ -118,3 +118,26 @@ build/Playwright, pois não houve alterações à aplicação. A migração orig
 permanece byte a byte igual, com SHA-256
 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58.
 Sem alterações de dependências, Auth/SMTP, triggers remotos, publicação ou main.
+
+## Reconfirmação por função — mesma exportação de 635 linhas
+
+Na solicitação posterior foram repetidos os totais da mesma exportação. Foi reconferido o ficheiro já recebido, com o SHA-256 acima; não foi presumido um novo anexo nem uma nova captura remota. Todas as 76 colunas e as 12 funções voltaram a passar a comparação específica. Não houve nova execução de testes de aplicação ou consultas remotas nesta reconfirmação.
+
+| Função | MD5 esperado (LF) | MD5 observado = original em CRLF |
+| --- | --- | --- |
+| public.admin_mutation(text, jsonb) | `1bce1ebfd15a16e392af368f638b8603` | `45986e20d68af4078728d25412c48409` |
+| public.audit_invitation(text, text, uuid) | `10db0520ae7c019f5c1c92a122db2f14` | `4936ef959adbae53cacf56f2d96cbdbe` |
+| public.handle_auth_user() | `41fab9f6fe598fed270624a6863d16f7` | `fcfffd82e15ace06ef1bfe18a15fc663` |
+| public.has_permission(text, uuid) | `80df2a5e9102572757d9e338745abb05` | `985831504bc35142e559c045acaae059` |
+| public.in_unit_scope(uuid, uuid) | `fbd474bd92059cbba9815cfc8874a2f9` | `56fb9c8007f6a85c299c3d1ebd2e3692` |
+| public.is_active_user() | `b03f24aba18ee8d917bbf44a6ed8616a` | `465b07f3dffc20e8acb7384ec15d2a73` |
+| public.may_validate_activity(uuid[], uuid) | `4a76317a68076d443fd64a6bb278b73c` | `3c92ae8cf625889f3eb3dea62166179f` |
+| public.my_permissions() | `542ad4cb5f16cdef72cc666c4520c97b` | `bf99f39670537f30ad9c527d55e0b328` |
+| public.protect_cost_tree() | `98f64b300581b00a7cc39bae34aa93f2` | `d396f3409a70e7965b6120d98d0cc9da` |
+| public.protect_unit_tree() | `c40c6d08855b42355fbaa10417d6273a` | `76f55ab779cd2c23e16086e5e85628bd` |
+| public.record_audit() | `fee924fb5e6315db63d5696c1bece7d6` | `c357216d2ac2ddd3d32e78775417ab53` |
+| public.visible_person(uuid, text) | `681447c73e4be9b16ecdf06fcce57321` | `ea26f902c2c95b1686a38419216a16f5` |
+
+Em todos os casos foi calculado o MD5 da variante CRLF directamente do corpo do original, e não uma transformação de hashes. O valor coincide com o observado, sem diferenças nos restantes metadados. Isto distingue uma diferença de representação de uma alteração efectiva identificada no código; não se atribui ao PostgreSQL uma reescrita automática do corpo. A origem exacta da conversão de finais de linha (editor/transporte) não está demonstrada pelo CSV.
+
+Não é necessária uma consulta adicional para esclarecer estes 88 alertas, pois a evidência existente já os resolve. A consulta corrigida permanece apenas de leitura para verificações futuras. A referência de ficheiro SHA-256 e a análise dos privilégios permanecem inalteradas.

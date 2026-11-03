@@ -23,6 +23,7 @@ privilégios efectivos de tabela/coluna e RPCs foram conferidos no CSV, incluind
 comparação com a referência do repositório. Não se identificaram exposições
 indevidas ou alertas inexplicados no âmbito de catálogo/ACLs desta captura.
 Não houve consulta directa ou escrita do assistente no Supabase.
+A mesma exportação de 635 linhas foi reconferida após nova solicitação; a análise detalhada inclui agora os pares de MD5 das 12 funções. Confirma-se novamente que as 76 obrigatoriedades de coluna existem e que todos os hashes observados correspondem à variante CRLF do original. Não são necessárias consultas adicionais para resolver esses alertas.
 
 O inspector corrigido usa 262 objectos portáveis, verifica NOT NULL pelas 100
 colunas e normaliza apenas CRLF→LF nos hashes de funções. Mantém a detecção de
