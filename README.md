@@ -4,7 +4,7 @@ Fase 1: autenticação, utilizadores, estrutura organizacional e permissões. A 
 
 ## Estado actual
 
-O código inclui Supabase Auth com sessões verificadas, rotas privadas, convites administrativos, organização e atribuições, políticas RLS e auditoria. **Não há projecto Supabase configurado nesta máquina; os fluxos Auth/SMTP/PostgREST reais ainda não estão homologados.** Sem configuração, / redirecciona para /configuracao e a entrada fica desactivada. Isso é o comportamento de protecção esperado, não uma sessão de demonstração.
+O código inclui Supabase Auth com sessões verificadas, rotas privadas, convites administrativos, organização e atribuições, políticas RLS e auditoria. **A migração original já foi executada uma vez pelo responsável no Supabase de desenvolvimento (16 tabelas/16 RLS/13 políticas/1 trigger de perfis reportados); não a reaplicar. Os fluxos Auth/SMTP/PostgREST reais ainda não estão homologados.** Sem configuração, / redirecciona para /configuracao e a entrada fica desactivada. Isso é o comportamento de protecção esperado, não uma sessão de demonstração.
 
 Os módulos de actividades, fecho, KPIs, planeamento e relatórios continuam como fundação das fases futuras; não há cálculos ou dados empresariais fictícios. Centros de Custo e SAP/Primavera têm apenas modelo/contratos/documentação, sem importador ou conectores reais. Não foi iniciada a Fase 2.
 
@@ -47,3 +47,7 @@ O Playwright da Fase 1 força configuração Supabase ausente num servidor próp
 - [Instruções para agentes](AGENTS.md).
 
 Os documentos anteriores descrevem entregas históricas da Fase 0. Sem merge automático, sem portas públicas e sem publicação em produção. A Fase 2 só começa após aprovação expressa.
+
+## Verificação pós-migração da Fase 1
+
+Executar apenas a [inspecção de leitura](supabase/inspection/fase1-post-migration.sql), exportar a grelha completa e seguir o [relatório actual](docs/fase-1/validacao-pos-migracao.md) e o [plano de homologação](docs/fase-1/plano-homologacao.md). Contas, bootstrap, mutações, SMTP/Auth, publicação e merge dependem de nova autorização. O gerador da referência e os testes usam PostgreSQL PGlite em memória, sem ligação ao Supabase.

@@ -73,6 +73,24 @@ afterAll(async () => {
   await db?.close();
 });
 describe("PostgreSQL real isolado: RLS, integridade e segregação", () => {
+  it("delegação preparada não concede poderes efectivos nesta fase", async () => {
+    const inserted = await db.query<{ id: string }>(
+      "insert into public.delegations(from_user_id,to_user_id,permission_code,scope_unit_id,valid_from,valid_until) values($1,$2,'activities.create',$3,now()-interval '1 day',now()+interval '1 day') returning id",
+      [user(2), user(6), unit(2)],
+    );
+    try {
+      await asUser(user(6), async () => {
+        const permissions = await db.query<{ allowed: boolean; capabilities: string[] }>(
+          "select public.has_permission('activities.create',$1) as allowed, public.my_permissions() as capabilities",
+          [unit(2)],
+        );
+        expect(permissions.rows[0].allowed).toBe(false);
+        expect(permissions.rows[0].capabilities).not.toContain("activities.create");
+      });
+    } finally {
+      await db.query("delete from public.delegations where id=$1", [inserted.rows[0].id]);
+    }
+  });
   it("nega leituras anónimas", async () => {
     await db.exec("begin;set local role anon");
     try {

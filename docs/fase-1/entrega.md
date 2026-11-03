@@ -1,4 +1,12 @@
-# Entrega para revisão da Fase 1
+# Relatório da Fase 1
+
+## Actualização vigente — 3 de Novembro de 2026
+
+O responsável confirmou a execução única e autorizada da migração original no Supabase de desenvolvimento: Success. No rows returned. Validação posterior reportada: 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis. Estrutura principal validada pelo operador; privilégios/relações/RPCs detalhados e homologação real ainda pendentes. Não reaplicar a migração.
+
+A migração mantém SHA-256 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58. Seguir [validacao-pos-migracao.md](validacao-pos-migracao.md) para a única consulta de leitura e [plano-homologacao.md](plano-homologacao.md) para os testes futuros. Nenhuma conta, alteração SMTP/Auth, publicação ou merge foi autorizada nesta preparação. O assistente não executou a migração remota.
+
+As secções seguintes preservam a entrega inicial e respectivos resultados históricos. Para o estado actual, prevalece esta actualização e o relatório de segurança.
 
 ## Âmbito e base
 
@@ -29,9 +37,9 @@ O PR incremental deve ter como base fase-0-fundacao enquanto o PR #1 não estive
 - Uma tentativa inicial do Playwright foi impedida por um servidor de desenvolvimento anterior da própria tarefa na porta 3000. Esse servidor foi identificado e encerrado; o ensaio novo executou e passou os 42 testes.
 - Os antigos 45 testes públicos da Fase 0 estão preservados em tests/phase0, mas não foram executados nem contados como aprovados nesta entrega. A Fase 1 exige protecção das rotas, pelo que os seus pressupostos públicos deixaram de ser válidos.
 
-## Não validado e pendências
+## Não validado e pendências da entrega inicial — histórico
 
-Não há URL/chave pública Supabase nem chave administrativa configuradas. Nenhuma migração foi aplicada a Supabase remoto. Os testes PGlite criam auth.users e auth.uid de teste para simular o contexto JWT já validado; verificam o comportamento PostgreSQL e não a emissão de JWT ou os serviços Auth/PostgREST.
+Na entrega inicial não havia URL/chave pública Supabase nem chave administrativa configuradas, e nenhuma migração tinha sido aplicada remotamente. Essa situação histórica é actualizada no resumo acima. Os testes PGlite criam auth.users e auth.uid de teste para simular o contexto JWT já validado; verificam o comportamento PostgreSQL e não a emissão de JWT ou os serviços Auth/PostgREST.
 
 Pendentes: configuração de projecto exclusivamente de desenvolvimento, aplicação da migração, desactivação de signup público no fornecedor, SMTP/templates/URLs autorizadas, bootstrap do primeiro responsável e homologação real de login, recuperação/convites, cookies, suspensão, acções administrativas e chamadas directas à API por contas de âmbitos diferentes. Não se declara a Fase 1 operacional nem pronta para produção com base apenas nos testes locais.
 
@@ -45,4 +53,4 @@ Ainda preparados para fases posteriores: delegação temporária (sem concessão
 2. git fetch origin; git switch fase-1-autenticacao-permissoes.
 3. npm ci; npm run dev. Manter a porta 3000 Private.
 4. Sem Supabase, abrir /entrar para a página azul de acesso desactivado e / para observar o bloqueio /configuracao.
-5. Seguir supabase.md para configurar o projecto de desenvolvimento, aplicar a migração e homologar as contas autorizadas. Nunca enviar chaves no chat ou no Git.
+5. No projecto de desenvolvimento corrente, a migração já está aplicada: seguir validacao-pos-migracao.md e plano-homologacao.md, sem a reaplicar. Para configuração histórica de outro projecto, consultar supabase.md. Nunca enviar chaves no chat ou no Git.

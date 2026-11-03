@@ -1,5 +1,11 @@
 # Baseline e recuperação da primeira migração — Supabase Free
 
+**Actualização de 3 de Novembro:** o responsável já executou a migração uma vez e
+reportou 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis. Não a reaplicar.
+Seguir [validacao-pos-migracao.md](validacao-pos-migracao.md). A recuperação abaixo
+é contingência com autorização própria; as suas guardas deixam de servir depois
+de criar contas/dados. O restante texto preserva a preparação anterior.
+
 Data: 2 de Novembro de 2026. Exclusivamente desenvolvimento, sem dados reais.
 Estado remoto: não consultado nem alterado nesta preparação. Não executar agora a
 migração nem o ficheiro de recuperação. A Etapa B e uma eventual recuperação

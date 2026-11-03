@@ -1,59 +1,50 @@
 # Modelo, segurança e matriz de acesso
 
-## Prontidão vigente da Etapa B — APTO para solicitar autorização
+## Estado vigente — migração executada; homologação em curso
 
-Foram recebidas capturas de ecrã da consulta dos nove checks para o operador
-postgres: todos apresentam estado OK e permitido=true. A captura de leitura de
-supautils.drop_trigger_grants mostra a configuração presente para postgres; as
-capturas do check específico mostram auth_users_autorizado=true. Estes resultados
-encerram as pendências de privilégios e da autorização configurada de remoção do
-trigger em auth.users. A consulta completa do predicado booleano não está visível
-nas capturas; regista-se a evidência do resultado específico apresentado pelo
-responsável, sem alegar auditoria integral desse SQL ou execução efectiva de DROP.
+Em 3 de Novembro de 2026, o responsável confirmou ter autorizado e executado uma
+única vez a migração original no novo projecto Supabase exclusivamente de
+desenvolvimento. O SQL Editor devolveu Success. No rows returned. A validação
+posterior reportou 16 tabelas, 16 com RLS, 13 políticas e 1 trigger de perfis.
+A hora exacta da execução não foi fornecida. **Não reaplicar a migração.**
 
-| Permissão observada para postgres | Resultado |
-| --- | --- |
-| USAGE public | OK / true |
-| CREATE public | OK / true |
-| USAGE auth | OK / true |
-| SELECT auth.users | OK / true |
-| TRIGGER auth.users | OK / true |
-| REFERENCES auth.users.id | OK / true |
-| Permissão para LOCK SHARE auth.users na recuperação | OK / true |
-| EXECUTE auth.uid() | OK / true |
-| EXECUTE gen_random_uuid() | OK / true |
-| Check específico auth_users_autorizado | true |
+A estrutura principal fica registada como validada pelo operador. A revisão
+remota detalhada de relações, definições, privilégios efectivos, RPCs e triggers
+continua pendente: os quatro totais não comprovam esses elementos. Nesta sessão
+não existe conector SQL autorizado; o assistente preparou a consulta exclusiva
+de leitura e não se ligou ao Supabase ou recolheu credenciais.
 
-O registo privado baseline-fase1-painel.txt está concluído por confirmação do
-responsável. Estão confirmados signup público e acessos anónimos desactivados,
-confirmação de email activa, mínimo de 12 caracteres para palavras-passe,
-Site URL http://localhost:3000, nenhuma Redirect URL adicional, SMTP personalizado
-desactivado e limite de 2 emails/hora. A baseline real de 15 linhas foi analisada,
-sem colisões efectivas identificadas, com 0 utilizadores Auth e Storage vazio.
+Ver [validação pós-migração](validacao-pos-migracao.md), a consulta
+[supabase/inspection/fase1-post-migration.sql](../../supabase/inspection/fase1-post-migration.sql)
+e o [plano de homologação](plano-homologacao.md). O SQL de leitura compara
+338 objectos de referência, relações/índices, 13 políticas, 12 funções e 17 triggers,
+privilégios de tabela/coluna, execução de RPCs, catálogos iniciais e contagens sem
+dados pessoais. Só com o CSV real se poderá confirmar a correspondência remota.
+O assistente não declara ausência de exposições no remoto com base nos totais.
 
-**APTO para solicitar autorização expressa da Etapa B, limitada à execução da
-migração original no projecto novo de desenvolvimento confirmado.** Não há
-pendência preparatória impeditiva identificada nas evidências recebidas. Não
-houve autorização de execução nesta mensagem; não se executou SQL remoto. Não
-inclui bootstrap, criação de contas, alterações Auth, publicação ou merge.
+No original, anon/PUBLIC não recebem execução das funções da aplicação, sete RPCs
+são concedidas a authenticated e a escrita directa administrativa é revogada.
+As verificações locais exercitam a detecção de desvios, mas não substituem a API
+real com contas/âmbitos distintos. Delegations continua sem conceder poderes nesta
+fase; acesso ao próprio perfil inactivo é distinto de acesso funcional/terceiros.
 
-Riscos residuais: autorização de remoção observada por consulta de configuração,
-sem executar DROP/TRIGGER remotamente; recuperação validada apenas em PostgreSQL
-local com fixtures e limitada ao estado imediatamente após a migração, sem uso;
-serviços geridos/event triggers Supabase não simulados integralmente; localhost e
-SMTP padrão limitam a homologação Auth futura; 18 alertas moderados de ferramentas
-de desenvolvimento na auditoria local anterior (16 no runner), sem alertas no
-audit omitindo dev; homologação real de Auth/SMTP/cookies/RLS/PostgREST pendente.
-Estas limitações não são apresentadas como novos bloqueios à primeira migração.
+Baseline privada, registo privado de Auth e permissões pré-migração foram
+confirmados anteriormente; as novas contas, bootstrap, mutações de teste,
+alterações Auth/SMTP, publicação e merge continuam a depender de nova autorização.
+O plano Free mantém-se; nenhuma contratação é necessária para o lote de leitura.
+Site URL localhost, Redirect URLs vazias, SMTP padrão e 2 emails/hora são limitações
+para futura homologação de email, não motivo para repetir a migração SQL.
 
-Mantidos a migração original e SHA-256
-56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58,
-o procedimento compensatório e as dependências. Evidências de testes anteriores:
-57 unitários/SQL locais, incluindo 7 de recuperação; build e 42 testes de
-navegador em CI para o código já identificado no histórico. Não foram repetidos
-numa actualização apenas documental. Se houver alterações no projecto antes da
-execução autorizada, revalidar os pontos afectados. As secções abaixo são histórico;
-este resumo e a análise actualizada da baseline prevalecem.
+Migração preservada com SHA-256
+56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58.
+Azul-escuro, contratos Centros de Custo e SAP/Primavera, aplicação e dependências
+não foram alterados. A compensação de baseline vazia não deve ser usada depois
+de criar contas/dados; uma recuperação remota exige autorização própria.
+
+**Fase 1 ainda não integralmente homologada nem pronta para produção.** Falta
+rever o CSV detalhado e executar os lotes autorizados do plano. O histórico abaixo
+inclui o antigo estado APTO para solicitar Etapa B, entretanto executada pelo
+responsável; não constitui autorização para nova execução.
 
 ## Entidades e integridade
 

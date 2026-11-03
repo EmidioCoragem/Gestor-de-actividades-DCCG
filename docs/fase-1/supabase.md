@@ -1,6 +1,8 @@
 # Configurar e homologar Supabase de desenvolvimento
 
-Nenhum projecto, recurso de produção ou credencial foi criado/alterado por esta implementação. Faltam URL, chave pública e configurações Auth do projecto de desenvolvimento. Não enviar valores secretos no chat, nem colocar service_role em NEXT_PUBLIC_*.
+**Projecto corrente: migração já executada uma vez pelo responsável. Não executar novamente 202610300001_fase1.sql.** Os passos de configuração abaixo são o guia original para instalações novas, não autorização para repetir operações ou alterar o projecto corrente. Para este projecto, seguir [validação pós-migração](validacao-pos-migracao.md) e [plano de homologação](plano-homologacao.md). Contas, bootstrap, SMTP/URLs/Auth exigem nova autorização.
+
+O assistente não criou projectos, recursos de produção ou credenciais. O responsável já configurou o novo projecto de desenvolvimento, validou a API Auth e aplicou a migração; os valores de configuração permanecem em meios seguros, fora do Git. As instruções seguintes preservam a preparação original para instalações novas. Não enviar valores secretos no chat, nem colocar service_role em NEXT_PUBLIC_*.
 
 ## Configuração no navegador
 

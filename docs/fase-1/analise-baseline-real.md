@@ -1,5 +1,9 @@
 # Revisão da baseline real — 2 de Novembro de 2026
 
+**Actualização de 3 de Novembro:** a migração foi executada uma única vez pelo
+responsável. Este documento preserva a análise pré-migração; o estado corrente
+está em [validacao-pos-migracao.md](validacao-pos-migracao.md). Não repetir a migração.
+
 Documento vigente para a análise do CSV recebido. Não constitui autorização de
 execução da Etapa B ou de recuperação. Nenhuma ligação ao Supabase foi usada.
 
