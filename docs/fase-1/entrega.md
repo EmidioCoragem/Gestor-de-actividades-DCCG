@@ -1,5 +1,9 @@
 # Relatório da Fase 1
 
+## Recuperação PKCE com SMTP padrão — 4 de Novembro de 2026
+
+Implementado o callback code com exchangeCodeForSession, mantendo token_hash/verifyOtp. As Server Actions/Route Handlers exigem escrita de cookies; a intenção de recuperação é ligada ao verificador e destinatário e a definição de password exige uma autorização curta de uso único ligada à sessão validada. Nenhuma operação remota foi executada. Ver [procedimento vigente, limites e autorização futura](etapa-c/pkce-smtp-padrao.md) e [verificação local desta alteração](etapa-c/verificacao-pkce.md). Os estados efémeros são locais ao processo Node, adequados ao ensaio privado no Codespaces; várias instâncias de produção exigiriam armazenamento partilhado e revisão específica.
+
 ## Correcção de confirmação e recuperação — 3 de Novembro de 2026
 
 Preparada a [correcção SSR e o roteiro de recuperação de AT](etapa-c/correccao-confirmacao-e-recuperacao.md): origem canónica APP_ORIGIN, verificação servidor token_hash, modelos de convite/recuperação compatíveis com o painel, cookies Secure no HTTPS e protecções de logs/redireccionamentos. Os [resultados desta alteração](etapa-c/verificacao-correccao-auth.md) distinguem testes locais de homologação real. O responsável confirmou AT com email confirmado, perfil inactive e zero papéis; nenhuma operação Auth remota foi executada pelo assistente. Configurações do painel, recuperação por email e bootstrap continuam a exigir autorização separada.

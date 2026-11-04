@@ -38,6 +38,16 @@ describe("Sessão SSR sem transportar tokens no redireccionamento", () => {
     await expect(createSupabaseServerClient()).rejects.toThrow();
     expect(f.create).not.toHaveBeenCalled();
   });
+  it("Server Action/Route Handler não oculta falha de Set-Cookie", async () => {
+    await createSupabaseServerClient({ requireCookieWrites: true });
+    f.set.mockImplementation(() => { throw new Error("local failure"); });
+    expect(() => f.create.mock.calls[0][2].cookies.setAll([{ name: "local", value: "synthetic", options: {} }])).toThrow("guardar a sessão");
+  });
+  it("Server Component conserva comportamento de leitura sem escrita", async () => {
+    await createSupabaseServerClient();
+    f.set.mockImplementation(() => { throw new Error("local failure"); });
+    expect(() => f.create.mock.calls[0][2].cookies.setAll([{ name: "local", value: "synthetic", options: {} }])).not.toThrow();
+  });
   it("proxy mantém cookies Secure na renovação atrás de origem interna HTTP", async () => {
     f.create.mockImplementation((_url, _key, options) => ({
       auth: { getUser: async () => {

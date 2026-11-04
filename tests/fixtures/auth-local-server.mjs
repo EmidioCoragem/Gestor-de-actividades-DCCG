@@ -5,6 +5,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawn, execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const dir = mkdtempSync(join(tmpdir(), "gestor-auth-local-"));
 const cert = join(dir, "cert.pem");
@@ -39,7 +40,7 @@ const user = {
 };
 let state;
 function reset() {
-  state = { used: [], verifications: 0, recoveries: 0, updates: 0, logouts: 0, logoutFailed: false };
+  state = { used: [], verifications: 0, recoveries: 0, exchanges: 0, updates: 0, logouts: 0, logoutFailed: false, flow: null };
 }
 reset();
 function send(res, status, value) {
@@ -49,12 +50,30 @@ function send(res, status, value) {
 const control = httpServer((req, res) => {
   if (req.method === "POST" && req.url === "/reset") { reset(); return send(res, 200, { ok: true }); }
   if (req.method === "POST" && req.url === "/logout-failure") { state.logoutFailed = true; return send(res, 200, { ok: true }); }
+  if (req.method === "POST" && req.url === "/expire") {
+    if (state.flow) state.flow.expiresAt = 0;
+    return send(res, 200, { ok: true });
+  }
+  // Simula ConfirmationURL padrão: verificação no serviço e retorno com code.
+  // Só fluxo fictício, sem email/token real e apenas endereço loopback fixo.
+  if (req.method === "GET" && req.url === "/verify") {
+    if (!state.flow || state.flow.emailUsed) return send(res, 403, { error: "local_email_used" });
+    state.flow.emailUsed = true;
+    res.writeHead(303, { Location: state.flow.redirectTo + "?code=" + state.flow.code, "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" });
+    return res.end();
+  }
   if (req.method === "GET" && req.url === "/counts") {
-    const { verifications, recoveries, updates, logouts } = state;
-    return send(res, 200, { verifications, recoveries, updates, logouts });
+    const { verifications, recoveries, exchanges, updates, logouts } = state;
+    return send(res, 200, { verifications, recoveries, exchanges, updates, logouts });
   }
   send(res, 404, { error: "local_control_only" });
 });
+function session() {
+  const now = Math.floor(Date.now() / 1000);
+  const encode = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
+  const token = encode({ alg: "HS256", typ: "JWT" }) + "." + encode({ sub: user.id, session_id: "60000000-0000-4000-8000-000000000001", aud: "authenticated", role: "authenticated", exp: now + 3600, iat: now }) + ".local-synthetic-signature";
+  return { access_token: token, refresh_token: "local-synthetic-refresh", token_type: "bearer", expires_in: 3600, expires_at: now + 3600, user };
+}
 const auth = httpsServer({ cert: readFileSync(cert), key: readFileSync(key) }, async (req, res) => {
   // Não registar pedidos/corpos/cookies. O servidor aceita apenas endpoints fictícios.
   let raw = "";
@@ -72,12 +91,25 @@ const auth = httpsServer({ cert: readFileSync(cert), key: readFileSync(key) }, a
     if (!["invite", "recovery"].includes(body.type) || body.token_hash !== expected || state.used.includes(expected))
       return send(res, 403, { code: "otp_expired", msg: "Local expired link" });
     state.used.push(expected);
-    const now = Math.floor(Date.now() / 1000);
-    const encode = (value) => Buffer.from(JSON.stringify(value)).toString("base64url");
-    const token = encode({ alg: "HS256", typ: "JWT" }) + "." + encode({ sub: user.id, aud: "authenticated", role: "authenticated", exp: now + 3600, iat: now }) + ".local-synthetic-signature";
-    return send(res, 200, { access_token: token, refresh_token: "local-synthetic-refresh", token_type: "bearer", expires_in: 3600, expires_at: now + 3600, user });
+    return send(res, 200, session());
   }
-  if (path === "/auth/v1/recover" && req.method === "POST") { state.recoveries++; return send(res, 200, {}); }
+  if (path === "/auth/v1/recover" && req.method === "POST") {
+    const redirectTo = new URL(req.url, "https://127.0.0.1:4343").searchParams.get("redirect_to");
+    if (redirectTo !== "http://127.0.0.1:3100/auth/confirm" || body.code_challenge_method !== "s256" || !/^[A-Za-z0-9_-]{43}$/.test(body.code_challenge))
+      return send(res, 400, { error: "local_invalid_pkce" });
+    state.recoveries++;
+    state.flow = { redirectTo, code: "local-pkce-code-" + state.recoveries, challenge: body.code_challenge, expiresAt: Date.now() + 300_000, emailUsed: false, used: false };
+    return send(res, 200, {});
+  }
+  if (path === "/auth/v1/token" && req.method === "POST") {
+    state.exchanges++;
+    const flow = state.flow;
+    if (!flow || flow.used || flow.expiresAt <= Date.now() || body.auth_code !== flow.code ||
+        typeof body.code_verifier !== "string" || createHash("sha256").update(body.code_verifier).digest("base64url") !== flow.challenge)
+      return send(res, 400, { code: "flow_state_expired", msg: "Local invalid PKCE code" });
+    flow.used = true;
+    return send(res, 200, session());
+  }
   if (path === "/auth/v1/user" && req.method === "GET") {
     if (!req.headers.authorization) return send(res, 401, { msg: "Local missing session" });
     return send(res, 200, user);

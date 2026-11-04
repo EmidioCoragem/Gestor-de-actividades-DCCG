@@ -1,8 +1,13 @@
 "use server";
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { applicationOrigin, supabaseIsConfigured } from "./environment";
+import {
+  consumePasswordSetup, passwordSetupCookie, passwordSetupCookieOptions, sessionIdentity,
+  issueRecoveryRequest, recoveryRequestCookie, recoveryRequestCookieOptions, verifierFingerprint,
+} from "./password-setup";
 export type ActionResult = { message: string; success?: boolean };
 const emailSchema = z.email().max(254);
 const passwordSchema = z
@@ -44,10 +49,19 @@ export async function recoverAccess(
     return { message: "O endereço de recuperação ainda não está configurado." };
   }
   try {
-    const db = await createSupabaseServerClient();
-    await db.auth.resetPasswordForEmail(email.data, {
+    // O SDK grava o verificador PKCE por setAll ANTES de efectuar /recover.
+    // Falhar fechado se Set-Cookie não puder ser propagado pela Server Action.
+    const db = await createSupabaseServerClient({ requireCookieWrites: true });
+    const { error } = await db.auth.resetPasswordForEmail(email.data, {
       redirectTo: `${origin}/auth/confirm`,
     });
+    if (!error) {
+      const store = await cookies();
+      const fingerprint = verifierFingerprint(store.getAll());
+      if (!fingerprint) throw new Error("Verificador não conservado.");
+      const nonce = issueRecoveryRequest(email.data, fingerprint);
+      store.set(recoveryRequestCookie, nonce, recoveryRequestCookieOptions());
+    }
   } catch {
     // A mesma resposta para endereço inexistente, limite ou falha de transporte.
     // Não registar endereço, ligação de recuperação ou excepção do fornecedor.
@@ -73,13 +87,19 @@ export async function changePassword(
       message: "Use pelo menos 12 caracteres e confirme a mesma palavra-passe.",
     };
   try {
-    const db = await createSupabaseServerClient();
+    const db = await createSupabaseServerClient({ requireCookieWrites: true });
     const {
       data: { user },
       error: userError,
     } = await db.auth.getUser();
     if (userError || !user)
       return { message: "A ligação expirou. Solicite uma nova recuperação." };
+    const { data: { session }, error: sessionError } = await db.auth.getSession();
+    const identity = session && !sessionError ? sessionIdentity(session.access_token, user.id) : null;
+    const store = await cookies();
+    if (!identity || !consumePasswordSetup(store.get(passwordSetupCookie)?.value, identity))
+      return { message: "A ligação expirou. Solicite uma nova recuperação." };
+    store.set(passwordSetupCookie, "", passwordSetupCookieOptions(0));
     const { error } = await db.auth.updateUser({ password: values.data.password });
     if (error)
       return {

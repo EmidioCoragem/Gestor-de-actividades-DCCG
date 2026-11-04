@@ -1,5 +1,7 @@
 # Confirmação SSR e recuperação de AT no Codespaces
 
+Actualização de 4 de Novembro: para o modelo padrão Reset password, seguir [PKCE com SMTP padrão](pkce-smtp-padrao.md). O responsável confirmou as URLs HTTPS configuradas e reportou indisponibilidade de edição do modelo sem SMTP personalizado. Não editar modelos/SMTP como pré-requisito; os passos abaixo preservam o plano anterior para token_hash e exigem autorização própria.
+
 Preparação de código autorizada em 3 de Novembro de 2026 (Africa/Luanda). Nenhuma configuração remota ou envio de correio foi executado. Branch exclusiva: fase-1-autenticacao-permissoes. Não reaplicar a migração nem fazer bootstrap.
 
 ## Estado comprovado e diagnóstico

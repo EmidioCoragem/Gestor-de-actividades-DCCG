@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { localSession, localUserId } from "./auth-fixtures";
 const f = vi.hoisted(() => ({
   create: vi.fn(), configured: vi.fn(), recover: vi.fn(), getUser: vi.fn(),
-  update: vi.fn(), signOut: vi.fn(), redirect: vi.fn(),
+  update: vi.fn(), signOut: vi.fn(), redirect: vi.fn(), getSession: vi.fn(), getCookie: vi.fn(), setCookie: vi.fn(), getAll: vi.fn(),
 }));
+vi.mock("server-only", () => ({}));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: f.getCookie, set: f.setCookie, getAll: f.getAll }) }));
 vi.mock("@/lib/supabase/server", () => ({ createSupabaseServerClient: f.create }));
 vi.mock("next/navigation", () => ({ redirect: f.redirect }));
 vi.mock("@/modules/auth/environment", async (original) => ({
@@ -10,6 +13,7 @@ vi.mock("@/modules/auth/environment", async (original) => ({
   supabaseIsConfigured: f.configured,
 }));
 import { changePassword, recoverAccess } from "../../src/modules/auth/actions";
+import { issuePasswordSetup, sessionIdentity } from "../../src/modules/auth/password-setup";
 const origin = "https://approved-preview.example.invalid";
 const password = "Local-Synthetic-Only-123";
 function form(values: Record<string, string>) {
@@ -21,8 +25,13 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv("APP_ORIGIN", origin);
   f.configured.mockReturnValue(true);
-  f.create.mockResolvedValue({ auth: { resetPasswordForEmail: f.recover, getUser: f.getUser, updateUser: f.update, signOut: f.signOut } });
-  f.getUser.mockResolvedValue({ data: { user: { id: "local-fixture" } }, error: null });
+  f.create.mockResolvedValue({ auth: { resetPasswordForEmail: f.recover, getUser: f.getUser, getSession: f.getSession, updateUser: f.update, signOut: f.signOut } });
+  const session = localSession();
+  f.getUser.mockResolvedValue({ data: { user: session.user }, error: null });
+  f.getSession.mockResolvedValue({ data: { session }, error: null });
+  const grant = issuePasswordSetup(sessionIdentity(session.access_token, localUserId)!, "recovery");
+  f.getCookie.mockReturnValue({ value: grant.nonce });
+  f.getAll.mockReturnValue([{ name: "sb-fixture-auth-token-code-verifier", value: "synthetic-verifier" }]);
   f.recover.mockResolvedValue({ error: null });
   f.update.mockResolvedValue({ error: null });
   f.signOut.mockResolvedValue({ error: null });
@@ -34,6 +43,7 @@ describe("Recuperação sem enviar correio real", () => {
   it("usa somente origem configurada e rota de confirmação", async () => {
     const result = await recoverAccess({ message: "" }, form({ email: "at@example.invalid", redirectTo: "https://attacker.invalid" }));
     expect(f.recover).toHaveBeenCalledExactlyOnceWith("at@example.invalid", { redirectTo: origin + "/auth/confirm" });
+    expect(f.create).toHaveBeenCalledExactlyOnceWith({ requireCookieWrites: true });
     expect(result.success).toBe(true);
   });
   it("não distingue endereço existente, limite ou erro de transporte", async () => {
@@ -54,6 +64,15 @@ describe("Recuperação sem enviar correio real", () => {
   it("endereço inválido não chega ao fornecedor", async () => {
     await recoverAccess({ message: "" }, form({ email: "invalid" }));
     expect(f.create).not.toHaveBeenCalled();
+  });
+  it("só cria intenção HttpOnly depois de o SDK conservar o verificador", async () => {
+    await recoverAccess({ message: "" }, form({ email: "at@example.invalid" }));
+    expect(f.setCookie).toHaveBeenCalledWith("gestor-recovery-request", expect.any(String), expect.objectContaining({ httpOnly: true, secure: true, path: "/auth/confirm" }));
+    f.setCookie.mockClear();
+    f.getAll.mockReturnValue([]);
+    const result = await recoverAccess({ message: "" }, form({ email: "at@example.invalid" }));
+    expect(result.message).toContain("Se existir uma conta autorizada");
+    expect(f.setCookie).not.toHaveBeenCalled();
   });
 });
 
@@ -101,5 +120,19 @@ describe("Definição de palavra-passe sem privilégios funcionais", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const result = await changePassword({ message: "" }, form({ password, confirmation: password }));
     expect(result.message).not.toContain(password); expect(log).not.toHaveBeenCalled();
+  });
+  it("sessão autenticada normal sem grant não altera password", async () => {
+    f.getCookie.mockReturnValue(undefined);
+    const result = await changePassword({ message: "" }, form({ password, confirmation: password }));
+    expect(result.message).toContain("expirou");
+    expect(f.update).not.toHaveBeenCalled();
+  });
+  it("grant é de uso único mesmo quando updateUser falha", async () => {
+    f.update.mockResolvedValue({ error: { message: "local" } });
+    const data = form({ password, confirmation: password });
+    await changePassword({ message: "" }, data);
+    await changePassword({ message: "" }, data);
+    expect(f.update).toHaveBeenCalledOnce();
+    expect(f.setCookie).toHaveBeenCalledWith("gestor-password-setup", "", expect.objectContaining({ httpOnly: true, secure: true, maxAge: 0 }));
   });
 });
