@@ -26,6 +26,14 @@ Não se alteraram TLS, CSRF, permissões de portas ou políticas do ambiente par
 
 ## Limitações e próximos passos
 
+### Falha comunicada no Codespaces e correcção do teste
+
+O responsável apresentou uma execução de 1e81765 com 30/33 casos Auth local aprovados. Os três restantes são o mesmo cenário, «confirmação diferente não consome a autorização PKCE», nos formatos desktop, tablet e mobile. A segunda tentativa permanecia na página de actualização.
+
+A análise do teste e de AuthForm identificou que o formulário usa campos não controlados com uma Server Action: após devolver a mensagem de validação, o React limpa os campos. O teste preenchia novamente apenas a confirmação, deixando password vazia; required bloqueava a segunda submissão antes da autorização no servidor. A validação de dados em changePassword já ocorre antes de consumir a autorização PKCE.
+
+Corrigiu-se apenas o teste: comprovar que ambos os campos foram limpos e preencher ambos na nova tentativa. Nenhuma protecção, timeout, cookie ou código de autenticação foi alterado. O lint e git diff --check passaram nesta correcção. A reexecução focada foi tentada neste ambiente Cloud, mas o webServer voltou a terminar com exit code 1 antes de executar os testes. É necessário confirmar primeiro os três casos corrigidos e depois os 33 casos completos no Codespaces. Não se apresenta esta correcção como aprovação de navegador nem de recuperação real.
+
 1. Concluir build e as duas suites Playwright no Codespaces antes de qualquer email. Uma falha real deve ser analisada; esta entrega não é uma aprovação antecipada de recuperação remota.
 2. As intenções/grants são memória efémera do único processo Node do Codespaces, com expiração/uso único. Reinício, HMR ou outro processo podem invalidá-los. Falha fechado; não reutilizar links nem acrescentar fallback para sessão normal. Produção com múltiplas instâncias exige armazenamento partilhado e revisão própria.
 3. Os testes de SDK usam transporte e cookies fictícios. Não comprovam SMTP, elegibilidade do destinatário, gateway GitHub, validade criptográfica de JWT remoto ou a sessão real de AT.

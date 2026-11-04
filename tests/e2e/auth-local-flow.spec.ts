@@ -123,6 +123,12 @@ test("confirmação diferente não consome a autorização PKCE", async ({ page,
   await page.getByRole("button", { name: "Guardar palavra-passe" }).click();
   await expect(page.getByRole("status")).toContainText("confirme a mesma palavra-passe");
   expect((await (await request.get("http://127.0.0.1:4344/counts")).json()).updates).toBe(0);
+  // A resposta da Server Action limpa os campos não controlados do formulário.
+  // Uma nova tentativa tem de preencher ambos; required impediria a submissão
+  // se apenas a confirmação fosse preenchida de novo.
+  await expect(page.getByLabel("Palavra-passe", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Confirmar palavra-passe")).toHaveValue("");
+  await page.getByLabel("Palavra-passe", { exact: true }).fill("Local-Test-Password-123");
   await page.getByLabel("Confirmar palavra-passe").fill("Local-Test-Password-123");
   await page.getByRole("button", { name: "Guardar palavra-passe" }).click();
   await expect(page).toHaveURL(/\/entrar\?mensagem=palavra-passe-actualizada$/);
