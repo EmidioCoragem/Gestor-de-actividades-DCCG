@@ -6,6 +6,8 @@ Este é o procedimento vigente para recuperar AT com o modelo padrão Reset pass
 
 ## Fluxo e segurança
 
+No Codespaces privado, os três formulários Auth passam também pela [prova CSRF de origem](correcao-origem-codespaces.md). Esta adaptação não autoriza localhost na configuração do Next: exige prova ligada ao cookie do navegador antes de repor APP_ORIGIN no transporte afectado. Build e túnel real da adaptação têm validação própria pendente; não repetir um pedido real como diagnóstico.
+
 1. O pedido começa no formulário /recuperar-acesso, através da Server Action. O SDK SSR 0.8.0 usa flowType=pkce, persistência em cookies e detectSessionInUrl=false. Não há leitor de fragmentos nem conversão manual de access_token/refresh_token.
 2. resetPasswordForEmail gera o verificador e grava-o por setAll antes de chamar /recover. O desafio S256 é enviado ao Auth. A Server Action exige escrita de cookies: uma falha na gravação do verificador impede esse pedido. Apenas clientes usados em leitura de Server Components conservam a tolerância anterior a cookies não graváveis.
 3. Após sucesso do SDK, a aplicação guarda uma intenção curta em cookie HttpOnly, Secure no HTTPS, SameSite=Lax e Path=/auth/confirm. O estado servidor liga esta intenção à impressão SHA-256 dos cookies do verificador e ao hash do destinatário. Não guarda email em claro, JWT ou password.

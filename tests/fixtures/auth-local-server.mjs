@@ -136,6 +136,7 @@ if (!stopping) {
   child = spawn(process.execPath, ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", "3100"], {
     stdio: "inherit",
     env: { ...process.env,
+      CODESPACES: "",
       NODE_ENV: "development",
       NEXT_PUBLIC_SUPABASE_URL: "https://127.0.0.1:4343",
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "local-public-placeholder",

@@ -5,14 +5,17 @@ export function AuthForm({
   action,
   mode,
   disabled = false,
+  formOriginNonce,
 }: {
   action: (state: ActionResult, form: FormData) => Promise<ActionResult>;
   mode: "login" | "recovery" | "password";
   disabled?: boolean;
+  formOriginNonce?: string;
 }) {
   const [state, formAction, pending] = useActionState(action, { message: "" });
   return (
     <form action={formAction} className="data-form">
+      {formOriginNonce && <input type="hidden" name="gestor_form_origin" value={formOriginNonce} />}
       {mode !== "password" && (
         <label>
           Correio electrónico

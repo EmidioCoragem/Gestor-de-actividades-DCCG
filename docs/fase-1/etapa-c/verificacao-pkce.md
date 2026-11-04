@@ -26,6 +26,8 @@ Não se alteraram TLS, CSRF, permissões de portas ou políticas do ambiente par
 
 ## Limitações e próximos passos
 
+A tentativa real posterior encontrou uma rejeição CSRF por divergência entre Origin e x-forwarded-host. A análise, a adaptação com prova CSRF e os resultados próprios dessa alteração estão em [correcao-origem-codespaces.md](correcao-origem-codespaces.md). Os resultados históricos abaixo não aprovam automaticamente essa nova versão nem o túnel real.
+
 ### Falha comunicada no Codespaces e correcção do teste
 
 O responsável apresentou uma execução de 1e81765 com 30/33 casos Auth local aprovados. Os três restantes são o mesmo cenário, «confirmação diferente não consome a autorização PKCE», nos formatos desktop, tablet e mobile. A segunda tentativa permanecia na página de actualização.

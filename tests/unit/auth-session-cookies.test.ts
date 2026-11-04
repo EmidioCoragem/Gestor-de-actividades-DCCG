@@ -10,6 +10,7 @@ import { NextRequest } from "next/server";
 beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv("NODE_ENV", "test");
+  vi.stubEnv("CODESPACES", "");
   vi.stubEnv("APP_ORIGIN", "https://approved-preview.example.invalid");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://fixture.example.invalid");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "local-public-placeholder");

@@ -2,8 +2,24 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { readSupabaseConfig } from "@/lib/supabase/config";
 import { applicationOrigin } from "@/modules/auth/environment";
+import { protectFormOrigin, formOriginCookie, formOriginCookieOptions } from "@/modules/auth/form-origin";
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const protection = await protectFormOrigin(request);
+  if (protection.blocked) return new NextResponse("Pedido de formulário recusado.", {
+    status: 403,
+    headers: { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" },
+  });
+  const next = () => {
+    const result = NextResponse.next({ request: { headers: request.headers } });
+    if (protection.issuedNonce)
+      result.cookies.set(formOriginCookie, protection.issuedNonce, formOriginCookieOptions);
+    if (["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe"].includes(request.nextUrl.pathname)) {
+      result.headers.set("Cache-Control", "private, no-store");
+      result.headers.set("Referrer-Policy", "no-referrer");
+    }
+    return result;
+  };
+  let response = next();
   let config;
   let origin;
   try {
@@ -23,7 +39,7 @@ export async function proxy(request: NextRequest) {
       getAll: () => request.cookies.getAll(),
       setAll(values) {
         values.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
+        response = next();
         values.forEach(({ name, value, options }) =>
           response.cookies.set(name, value, options),
         );

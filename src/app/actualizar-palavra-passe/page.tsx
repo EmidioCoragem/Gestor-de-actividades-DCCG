@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { AuthPage } from "@/components/auth-page";
-import { AuthForm } from "@/components/auth-form";
+import { ProtectedAuthForm } from "@/components/protected-auth-form";
 import { changePassword } from "@/modules/auth/actions";
 import { supabaseIsConfigured } from "@/modules/auth/environment";
 export const metadata = { title: "Actualizar palavra-passe" };
@@ -13,7 +13,7 @@ export default function Page() {
         utilize a ligação verificada enviada por correio electrónico. Use pelo
         menos 12 caracteres.
       </p>
-      <AuthForm
+      <ProtectedAuthForm
         action={changePassword}
         mode="password"
         disabled={!supabaseIsConfigured()}

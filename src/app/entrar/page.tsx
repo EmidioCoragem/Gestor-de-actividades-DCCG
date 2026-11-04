@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { AuthPage } from "@/components/auth-page";
-import { AuthForm } from "@/components/auth-form";
+import { ProtectedAuthForm } from "@/components/protected-auth-form";
 import { signIn } from "@/modules/auth/actions";
 import { supabaseIsConfigured } from "@/modules/auth/environment";
 export const metadata = { title: "Entrar" };
@@ -19,7 +19,7 @@ export default function Page() {
           está operacional.
         </div>
       )}
-      <AuthForm action={signIn} mode="login" disabled={!configured} />
+      <ProtectedAuthForm action={signIn} mode="login" disabled={!configured} />
       <Link className="text-link" href="/recuperar-acesso">
         Recuperar acesso
       </Link>
