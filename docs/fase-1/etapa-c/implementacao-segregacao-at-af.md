@@ -1,5 +1,7 @@
 # Implementação local da segregação AT/AF — 5 de Novembro de 2026
 
+**Actualização posterior:** a pendência Origin: null deste commit foi analisada e corrigida localmente em [correccao-pkce-csrf-hidratacao.md](correccao-pkce-csrf-hidratacao.md). Os estados e resultados abaixo conservam o registo histórico de 1675de9; consultar a actualização para os checks posteriores. Nenhuma autorização remota decorre dessa correcção.
+
 **APLICAÇÃO REMOTA NÃO AUTORIZADA. BOOTSTRAP BLOQUEADO.**
 
 **Estado para recomendar instalação/homologação: NÃO APTO**, devido à pendência da suite Auth fictícia abaixo. A implementação AT/AF e os respectivos testes locais estão concluídos; não se declara aprovação integral dos checks de regressão. O responsável autorizou código, nova migração incremental, testes locais, documentação e commit exclusivamente na branch fase-1-autenticacao-permissoes. Não autorizou aplicar SQL no Supabase, criar/activar contas, conceder papéis reais, executar bootstrap, alterar Auth/SMTP, publicar ou fazer merge na main.

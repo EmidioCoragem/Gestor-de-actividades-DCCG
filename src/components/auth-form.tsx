@@ -1,6 +1,7 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useSyncExternalStore } from "react";
 import type { ActionResult } from "@/modules/auth/actions";
+const subscribeToHydration = () => () => {};
 export function AuthForm({
   action,
   mode,
@@ -13,6 +14,10 @@ export function AuthForm({
   formOriginNonce?: string;
 }) {
   const [state, formAction, pending] = useActionState(action, { message: "" });
+  const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
+  // Com no-referrer, um POST HTML nativo pode ter Origin: null. Só activar
+  // quando React já instalou o transporte da Server Action, mantendo o CSRF.
+  const unavailable = disabled || !hydrated;
   return (
     <form action={formAction} className="data-form">
       {formOriginNonce && <input type="hidden" name="gestor_form_origin" value={formOriginNonce} />}
@@ -25,7 +30,7 @@ export function AuthForm({
             autoComplete="email"
             maxLength={254}
             required
-            disabled={disabled}
+            disabled={unavailable}
           />
         </label>
       )}
@@ -41,7 +46,7 @@ export function AuthForm({
             minLength={mode === "password" ? 12 : 1}
             maxLength={128}
             required
-            disabled={disabled}
+            disabled={unavailable}
           />
         </label>
       )}
@@ -55,11 +60,11 @@ export function AuthForm({
             minLength={12}
             maxLength={128}
             required
-            disabled={disabled}
+            disabled={unavailable}
           />
         </label>
       )}
-      <button className="button" disabled={disabled || pending}>
+      <button className="button" disabled={unavailable || pending}>
         {pending
           ? "A processar…"
           : mode === "login"
@@ -70,6 +75,7 @@ export function AuthForm({
                 ? "Terminar sessão e voltar à entrada"
                 : "Guardar palavra-passe"}
       </button>
+      <noscript>Active o JavaScript para utilizar este formulário.</noscript>
       <p
         role="status"
         className={state.success ? "feedback success" : "feedback"}

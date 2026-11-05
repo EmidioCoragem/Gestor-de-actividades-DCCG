@@ -33,7 +33,7 @@ webServer:{...base.webServer,command:'node node_modules/next/dist/bin/next start
     if(mode==='offline') {
       result=spawnSync('npm',['run','build','--','--webpack'],{cwd:app,env,stdio:'inherit',detached:true,timeout:300000});
     }
-    if(!result || result.status===0) result=spawnSync('npx',['--no-install','playwright','test',`--config=${config}`,'--global-timeout=600000'],{cwd:app,env,stdio:'inherit',detached:true,timeout:660000});
+    if(!result || result.status===0) result=spawnSync('npx',['--no-install','playwright','test',`--config=${config}`,...process.argv.slice(3).filter(arg=>/^(--grep=|--project=|--repeat-each=)/.test(arg)),'--global-timeout=600000'],{cwd:app,env,stdio:'inherit',detached:true,timeout:660000});
   }
   if(result.error) {
     // O grupo foi criado por este runner; nunca contém o servidor do portal.

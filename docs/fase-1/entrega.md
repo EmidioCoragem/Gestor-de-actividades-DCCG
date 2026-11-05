@@ -12,6 +12,10 @@ O [próximo bloco AT/AF](etapa-c/bootstrap-at-af.md) está apenas planeado e exi
 
 A [auditoria local e proposta técnica](etapa-c/revisao-segregacao-at-af.md) identifica uma falha crítica nas regras actuais: access.manage permite concessão/revogação de technical_admin a terceiros e clonagem de users.manage. O bootstrap está **NÃO APTO** até correcção e homologação específicas. Preparados apenas documentação, testes em memória e rascunho SQL em supabase/proposals, fora das migrações executáveis. A migração original e o código de produção não foram alterados; nenhuma operação remota foi executada. Os resultados desta revisão e as validações ainda pendentes estão discriminados no relatório. A autorização desta tarefa amplia o âmbito local histórico de documentação para auditoria/proposta/testes, sem autorizar instalação ou bootstrap.
 
+## Correcção local PKCE/CSRF — 5 de Novembro de 2026
+
+A [análise de Origin: null e a correcção de hidratação](etapa-c/correccao-pkce-csrf-hidratacao.md) demonstra que o formulário SSR activo antes do React, com no-referrer, podia efectuar POST nativo com origem nula. Os controlos ficam bloqueados até hidratação, mantendo a recusa de origens inválidas e sem alterar AT/AF. O relatório distingue os cenários aprovados, a execução integral interrompida e a homologação remota ainda não autorizada.
+
 ## Implementação local da segregação AT/AF — 5 de Novembro de 2026
 
 Por autorização expressa, foi preparada a [correcção local com migração incremental e guarda na Server Action](etapa-c/implementacao-segregacao-at-af.md), acompanhada de testes adversariais, concorrência PostgreSQL nativa e checks de aplicação isolados. A migração original permanece intacta. Este bloco não altera o estado remoto nem autoriza bootstrap; os resultados efectivamente aprovados, bloqueados e pendentes constam do relatório técnico.

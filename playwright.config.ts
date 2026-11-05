@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",
-  testIgnore: "**/auth-local-flow.spec.ts",
+  testIgnore: ["**/auth-local-flow.spec.ts", "**/auth-origin-regression.spec.ts"],
   fullyParallel: true,
   use: {
     baseURL: "http://127.0.0.1:3000",

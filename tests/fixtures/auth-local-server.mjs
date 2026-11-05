@@ -54,6 +54,19 @@ function send(res, status, value) {
   res.end(JSON.stringify(value));
 }
 const control = httpServer((req, res) => {
+  // Prova do comportamento do browser, sem sessão, corpo ou credenciais registados.
+  if (req.url === "/origin-probe" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "text/html", "Referrer-Policy": "no-referrer", "Cache-Control": "no-store" });
+    return res.end('<!doctype html><html><body><form method="post" action="/origin-probe"><button>Enviar prova local</button></form></body></html>');
+  }
+  if (req.url === "/origin-probe" && req.method === "POST") {
+    req.resume();
+    const received = req.headers.origin;
+    return send(res, 200, {
+      origin: received === undefined ? "absent" : received === "null" ? "null" : received === "http://127.0.0.1:4344" ? "legitimate" : "forged",
+      mode: req.headers["sec-fetch-mode"] ?? "absent",
+    });
+  }
   if (req.method === "POST" && req.url === "/reset") { reset(); return send(res, 200, { ok: true }); }
   if (req.method === "POST" && req.url === "/logout-failure") { state.logoutFailed = true; return send(res, 200, { ok: true }); }
   if (req.method === "POST" && req.url === "/expire") {

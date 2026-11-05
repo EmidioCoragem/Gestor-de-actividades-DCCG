@@ -159,10 +159,10 @@ describe("Origem dos formulários privados Codespaces", () => {
     vi.stubEnv("NODE_ENV", "production");
     expect(() => codespacesFormOrigin()).toThrow();
   });
-  it("não modifica transporte local fora do Codespaces", async () => {
+  it("não adapta transporte local fora do Codespaces e recusa origem não canónica", async () => {
     vi.stubEnv("CODESPACES", "");
     const req = post({ origin: "http://localhost:3000" });
-    expect((await protectFormOrigin(req)).blocked).toBe(false);
+    expect((await protectFormOrigin(req)).blocked).toBe(true);
     expect(req.headers.get("origin")).toBe("http://localhost:3000");
   });
   it("Next continua a recusar localhost e domínios externos na sua allowlist", async () => {
@@ -274,6 +274,33 @@ describe("Origem dos formulários privados Codespaces", () => {
   ])("logout restrito recusa falsificação ou ausência de prova: %j", async headers => {
     const req = post(headers, undefined, "/acesso-restrito");
     expect((await proxy(req)).status).toBe(403);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+});
+
+
+describe("Auth fora do Codespaces: origem canónica obrigatória", () => {
+  it.each([origin, "http://127.0.0.1:3100"])("aceita origem configurada %s sem reescrever", async canonical => {
+    vi.stubEnv("CODESPACES", ""); vi.stubEnv("APP_ORIGIN", canonical);
+    const req = post({ origin: canonical });
+    expect(await protectFormOrigin(req)).toEqual({ blocked: false });
+    expect(req.headers.get("origin")).toBe(canonical);
+  });
+  it.each([null, "null", "", "https://forged.invalid", `${origin}/path`, `${origin}, https://forged.invalid`])("recusa origem ausente/nula/falsificada: %s", async received => {
+    vi.stubEnv("CODESPACES", "");
+    const req = post({ "x-original-origin": origin, "sec-fetch-site": "same-origin" });
+    if (received === null) req.headers.delete("origin"); else req.headers.set("origin", received);
+    expect((await proxy(req)).status).toBe(403);
+    expect(req.headers.get("origin")).toBe(received);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("GET sem Origin continua permitido para confirmação/navegação", async () => {
+    vi.stubEnv("CODESPACES", "");
+    expect(await protectFormOrigin(new NextRequest(origin + "/recuperar-acesso"))).toEqual({ blocked: false });
+  });
+  it("POST com configuração de origem ausente falha fechado", async () => {
+    vi.stubEnv("CODESPACES", ""); vi.stubEnv("APP_ORIGIN", "");
+    expect((await proxy(post())).status).toBe(403);
     expect(sdk.create).not.toHaveBeenCalled();
   });
 });

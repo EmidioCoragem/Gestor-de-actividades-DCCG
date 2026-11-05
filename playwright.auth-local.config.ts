@@ -4,7 +4,7 @@ import base from "./playwright.config";
 // Cópia temporária independente; Auth HTTPS fictício, sem .next/.env do portal.
 export default defineConfig({
   testDir: "./tests/e2e",
-  testMatch: "auth-local-flow.spec.ts",
+  testMatch: ["auth-local-flow.spec.ts", "auth-origin-regression.spec.ts"],
   workers: 1,
   fullyParallel: false,
   // Inclui a compilação inicial das rotas na cópia Webpack sem cache partilhada.

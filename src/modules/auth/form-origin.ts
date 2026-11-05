@@ -82,7 +82,13 @@ export async function protectFormOrigin(request: NextRequest): Promise<FormOrigi
   if (!authForms.has(request.nextUrl.pathname) && !diagnostic) return { blocked: false };
   let origin: string | null;
   try { origin = codespacesFormOrigin(); } catch { return { blocked: true }; }
-  if (!origin) return { blocked: false };
+  if (!origin) {
+    if (request.method !== "POST") return { blocked: false };
+    // O Next pode apenas avisar quando Origin está ausente. Nos formulários
+    // Auth exigimos a origem canónica também fora do transporte Codespaces.
+    try { return { blocked: request.headers.get("origin") !== applicationOrigin() }; }
+    catch { return { blocked: true }; }
+  }
   const cookieName = diagnostic ? originDiagnosticCookie : formOriginCookie;
   const nonces = request.cookies.getAll(cookieName);
   const cookieOccurrences = (request.headers.get("cookie") ?? "").split(";")
