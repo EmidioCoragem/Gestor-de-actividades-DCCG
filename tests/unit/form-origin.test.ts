@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 import { NextRequest } from "next/server";
 vi.mock("server-only", () => ({}));
 const sdk = vi.hoisted(() => ({ create: vi.fn() }));
@@ -241,6 +242,31 @@ describe("Origem dos formulários privados Codespaces", () => {
     const req = post({ origin: "http://localhost:3000" }, undefined, "/acesso-restrito");
     expect((await protectFormOrigin(req)).blocked).toBe(false);
     expect(req.headers.get("origin")).toBe(origin);
+  });
+  it("compilador Next conserva o FormData CSRF da acção de logout no transporte React", async () => {
+    const { transformSync } = require("next/dist/build/swc");
+    const { extractInfoFromServerReferenceId, omitUnusedArgs } = require("next/dist/shared/lib/server-reference-info");
+    const compiled = transformSync(readFileSync("src/modules/auth/actions.ts", "utf8"), {
+      filename: "/fixture/src/modules/auth/actions.ts",
+      jsc: { parser: { syntax: "typescript" } }, module: { type: "es6" },
+      serverActions: { isReactServerLayer: true, isDevelopment: true,
+        useCacheEnabled: false, hashSalt: "local-fixture-only", cacheKinds: ["default"] },
+    });
+    const metadata = compiled.code.match(/__next_internal_action_entry_do_not_use__\s+(\{[^\n]+\})/);
+    expect(metadata).not.toBeNull();
+    const entries = JSON.parse(metadata![1]) as Record<string, { name: string }>;
+    const id = Object.entries(entries).find(([, entry]) => entry.name === "signOutFromRestricted")?.[0];
+    expect(id).toBeDefined();
+    const form = new FormData(); form.set(formOriginField, nonce);
+    const args = omitUnusedArgs([{ message: "" }, form], extractInfoFromServerReferenceId(id));
+    expect(args[1]).toBe(form);
+    vi.stubGlobal("__webpack_require__", { u: () => "" });
+    const { encodeReply } = require("next/dist/compiled/react-server-dom-webpack/client.browser");
+    const body = await encodeReply(args);
+    const request = post({ origin: "http://localhost:3000" }, body, "/acesso-restrito");
+    expect((await proxy(request)).status).toBe(200);
+    expect(request.headers.get("origin")).toBe(origin);
+    expect(sdk.create).not.toHaveBeenCalled();
   });
   it.each<Record<string, string>>([
     { origin: "https://forged.invalid" },

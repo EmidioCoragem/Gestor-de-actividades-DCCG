@@ -128,7 +128,14 @@ async function endSession(): Promise<boolean> {
     return false;
   }
 }
-export async function signOutFromRestricted(): Promise<ActionResult> {
+export async function signOutFromRestricted(
+  _state: ActionResult,
+  form: FormData,
+): Promise<ActionResult> {
+  // Next omite argumentos não usados antes de serializar a Server Action.
+  // Consumir o FormData conserva também a prova CSRF verificada pelo proxy.
+  if (!(form instanceof FormData))
+    return { message: "Pedido de formulário inválido. Reabra a página antes de continuar." };
   if (!await endSession())
     return { message: "Não foi possível terminar a sessão. Verifique a ligação e contacte o responsável." };
   redirect("/entrar");

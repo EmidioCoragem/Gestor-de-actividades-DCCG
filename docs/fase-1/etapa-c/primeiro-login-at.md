@@ -44,3 +44,17 @@ Não repetir o login. Não limpar cookies, reutilizar ligações de recuperaçã
 - Dependências e migração original inalteradas. SHA-256 da migração: 56a4f959ba552e473bc1161bc8c529ae7a1a51574221ed4c0ae8c36a322a3e58.
 
 Não se contactou Supabase remoto nesta implementação. Os dados reais deste relatório provêm exclusivamente das capturas/declarações do responsável, sem passwords, cookies, ligações de recuperação, tokens ou identificadores de sessão. Não se alterou main, não se publicaram serviços e não foram criados utilizadores, perfis activos ou papéis.
+
+## Revisão após o primeiro clique de logout
+
+O responsável apresentou no Codespaces aprovação de lint, TypeScript, testes unitários do logout, build e Playwright focado no commit 01d6b67. A sessão continuava registada e a porta 3000 permanecia Private. O clique único posterior apresentou o erro genérico de resposta inesperada do Next, sem provar por si só o resultado no Supabase. Não foi autorizado um retry automático; a leitura de sessões e o evento Auth correspondente continuam necessários.
+
+A revisão identificou uma falha introduzida em 01d6b67: signOutFromRestricted não declarava argumentos. O compilador SWC da versão Next instalada gera uma máscara de argumentos vazia para essa função. O cliente aplica omitUnusedArgs antes de encodeReply, eliminando o FormData com a prova CSRF. No modo Codespaces a guarda exige essa prova e deve recusar o pedido antes do SDK. A marcação de linha ProtectedAuthForm no overlay não demonstra uma falha do render nem do Supabase.
+
+O novo teste de regressão compilou o ficheiro real de acções e reproduziu a perda do FormData no código anterior (falha observada: argumento indefinido). A acção passa a declarar estado e FormData e a validar o tipo deste último antes do logout. Isso conserva o argumento na máscara produzida pelo compilador. O mesmo teste usa omitUnusedArgs, encodeReply e o proxy reais, com transporte localhost, host público exacto e prova fictícia, confirmando que o corpo preservado passa a guarda Codespaces. Os casos existentes de falsificação e prova ausente permanecem exigidos. Não se enfraqueceu a guarda, a allowlist ou os cookies.
+
+Os testes de navegador locais anteriormente aprovados usam CODESPACES vazio no simulador e, por isso, não exercitavam a perda da prova exigida no túnel. A regressão nova cobre esse intervalo sem tokens reais nem contacto com o Supabase. O estado remoto após o clique e qualquer novo ensaio pessoal de logout devem ser tratados separadamente; este documento não autoriza repetição automática, login adicional ou bootstrap.
+
+O responsável comunicou que a leitura após o erro ainda mostra uma sessão Auth. Não foi apresentado um novo evento POST /logout correspondente ao clique. O logout real não está validado, e nenhum clique adicional foi executado pelo agente.
+
+Validação da correcção da serialização: lint e TypeScript aprovados; 70 testes focados em quatro ficheiros aprovados; suite completa com 204 testes em 20 ficheiros aprovada (154,96 segundos). O teste de regressão falhou antes da alteração e passou depois. Build tentado mas bloqueado por Turbopack/CSS ao criar processo/abrir porta (Operation not permitted); Playwright focado tentado mas o webServer terminou antes dos casos (exit 1). Estes dois resultados não são aprovações da versão nova e requerem execução no Codespaces. Dependências, allowlist e migração original inalteradas.

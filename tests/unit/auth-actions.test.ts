@@ -16,6 +16,7 @@ import { changePassword, recoverAccess, signOut, signOutFromRestricted } from ".
 import { issuePasswordSetup, sessionIdentity } from "../../src/modules/auth/password-setup";
 const origin = "https://approved-preview.example.invalid";
 const password = "Local-Synthetic-Only-123";
+const logoutFromRestricted = () => signOutFromRestricted({ message: "" }, new FormData());
 function form(values: Record<string, string>) {
   const data = new FormData();
   for (const [key, value] of Object.entries(values)) data.set(key, value);
@@ -139,7 +140,7 @@ describe("Definição de palavra-passe sem privilégios funcionais", () => {
 
 describe("Logout explícito sem privilégios administrativos", () => {
   it("logout restrito exige escrita de cookies e só redirecciona após sucesso", async () => {
-    await expect(signOutFromRestricted()).rejects.toThrow("LOCAL_REDIRECT");
+    await expect(logoutFromRestricted()).rejects.toThrow("LOCAL_REDIRECT");
     expect(f.create).toHaveBeenCalledExactlyOnceWith({ requireCookieWrites: true });
     expect(f.signOut).toHaveBeenCalledOnce();
     expect(f.redirect).toHaveBeenCalledExactlyOnceWith("/entrar");
@@ -148,7 +149,7 @@ describe("Logout explícito sem privilégios administrativos", () => {
   });
   it("erro do fornecedor não redirecciona nem revela detalhes", async () => {
     f.signOut.mockResolvedValue({ error: { message: "synthetic-provider-detail" } });
-    const result = await signOutFromRestricted();
+    const result = await logoutFromRestricted();
     expect(result.message).toContain("Não foi possível terminar");
     expect(result.message).not.toContain("synthetic-provider-detail");
     expect(f.redirect).not.toHaveBeenCalled();
@@ -156,14 +157,14 @@ describe("Logout explícito sem privilégios administrativos", () => {
   it("falha de Set-Cookie interrompe logout e não anuncia sucesso", async () => {
     f.signOut.mockRejectedValue(new Error("synthetic-cookie-write-detail"));
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    const result = await signOutFromRestricted();
+    const result = await logoutFromRestricted();
     expect(result.message).toContain("Não foi possível terminar");
     expect(result.message).not.toContain("synthetic-cookie-write-detail");
     expect(f.redirect).not.toHaveBeenCalled(); expect(log).not.toHaveBeenCalled();
   });
   it("configuração ausente não cria cliente nem redirecciona", async () => {
     f.configured.mockReturnValue(false);
-    expect((await signOutFromRestricted()).message).toContain("Não foi possível terminar");
+    expect((await logoutFromRestricted()).message).toContain("Não foi possível terminar");
     expect(f.create).not.toHaveBeenCalled(); expect(f.redirect).not.toHaveBeenCalled();
   });
   it("logout existente também verifica erro e escrita de cookies", async () => {
