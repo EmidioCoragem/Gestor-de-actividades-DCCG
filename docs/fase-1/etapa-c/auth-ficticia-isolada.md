@@ -8,13 +8,13 @@ Os bindings Supabase herdados são removidos do ambiente do Next fictício, subs
 
 O script tests/run-auth-isolated.sh permite executar um commit da branch Fase 1 sem fazer checkout, merge ou restore no portal activo. Cria um git archive em /tmp, liga as dependências existentes e executa a suite a partir dessa cópia. Verifica antes e depois a identidade e instante de arranque do PID protegido na porta 3000, os hashes dos inputs Next do portal e as referências das branches locais/stashes. Não chama endpoints do portal real nem lê os seus cookies ou credenciais. Se os manifests de dependências divergirem ou as portas de teste estiverem ocupadas, deve-se parar, sem instalar dependências no checkout activo ou terminar processos.
 
-No Codespaces, obter primeiro o SHA completo do commit desta correcção e substituir COMMIT_VALIDADO abaixo. O PID 33173 é apenas o identificado pelo responsável neste ensaio; se tiver mudado, parar e voltar a identificá-lo. Manter a porta 3000 Private e não repetir login/logout AT.
+Requer Node 24 e as dependências, OpenSSL e Chromium já instalados. No Codespaces, os comandos abaixo testam o commit 898fb3638e1a506ce949d749550139ea9af75d74. O PID 33173 é apenas o identificado pelo responsável neste ensaio; se tiver mudado, parar e voltar a identificá-lo. Manter a porta 3000 Private e não repetir login/logout AT.
 
 ```bash
 cd /workspaces/Gestor-de-actividades-DCCG
 test "$(git branch --show-current)" = "fase-1-autenticacao-permissoes" || exit 1
 git fetch origin fase-1-autenticacao-permissoes
-ALVO="COMMIT_VALIDADO"
+ALVO="898fb3638e1a506ce949d749550139ea9af75d74"
 EXECUTOR=$(mktemp /tmp/gestor-auth-executor-XXXXXX.sh)
 git show "$ALVO:tests/run-auth-isolated.sh" > "$EXECUTOR"
 bash "$EXECUTOR" "$ALVO" 33173
@@ -22,6 +22,16 @@ bash "$EXECUTOR" "$ALVO" 33173
 
 Não actualizar o checkout activo com o commit durante este ensaio: ele pode estar a executar uma versão anterior, e uma actualização poderia accionar HMR. A saída identifica separadamente a versão testada e a pasta de resultados. O script não afirma ter actualizado o servidor real. Os ficheiros de resultados e a cópia ficam na pasta temporária para revisão, sem tokens reais.
 
-A suite actual inclui 39 casos: os 33 anteriores e seis novos de logout. O timeout por caso passa de 30 para 60 segundos: a primeira execução isolada encontrou um timeout de navegação na compilação inicial de /acesso-restrito, antes do clique; os outros 38 casos passaram. Não se adicionaram retries, exclusões ou tolerância a falhas de segurança. Uma execução nova completa continua necessária para apresentar aprovação desta configuração.
+A suite actual inclui 39 casos: os 33 anteriores e seis novos de logout. O timeout por caso passa de 30 para 60 segundos: a primeira execução isolada encontrou um timeout de navegação na compilação inicial de /acesso-restrito, antes do clique; os outros 38 casos passaram. Não se adicionaram retries, exclusões ou tolerância a falhas de segurança.
 
 Testes unitários verificam que escritas na cópia não alteram os tipos, tsconfig, fonte ou lock do portal, e que o ambiente fictício não conserva os bindings Supabase herdados. A aprovação desta suite não comprova a continuidade da sessão AT, o funcionamento do logout no túnel ou a saúde HTTP do portal real; essas verificações são separadas e não devem provocar operações Auth durante este ensaio.
+
+## Resultados executados em 5 de Novembro de 2026
+
+- Lint e TypeScript aprovados. Dois testes unitários de isolamento aprovados. Verificação de sintaxe Bash/Node aprovada.
+- Segunda execução completa: 39 testes aprovados em 4,8 minutos, sem retries, usando o executor, git archive e dependências por symlink do commit 898fb3638e1a506ce949d749550139ea9af75d74.
+- Coexistência verificada neste ambiente com um Next local na porta 3000, sem configuração Supabase e sem pedidos Auth reais. A saída final confirmou o mesmo processo e instante de arranque, inputs Next, branches locais e stashes preservados; exit=0. O processo local de controlo foi encerrado pelo ensaio que o criou apenas depois dessa verificação. Não houve acesso ao PID 33173 do Codespaces do responsável.
+- Build padrão tentado separadamente, após terminar o controlo local: bloqueado pelo ambiente ao criar processo/abrir porta durante a transformação CSS/Turbopack (Operation not permitted, os error 1). Não se apresenta como aprovado nem se alterou o bundler de produção para contornar esse resultado.
+- Não se executaram migrações, operações Auth reais ou consultas ao Supabase remoto nesta tarefa. A suite normal e a suite unitária completa não foram repetidas; o pedido incidiu exclusivamente na Auth fictícia e no seu isolamento.
+
+Os resultados do Codespaces continuam dependentes de execução pelo responsável. Esperado: 39 passed, confirmação de preservação do PID 33173 e inputs/referências, Resultado exit=0 e caminho dos registos temporários. Um erro deve ser analisado sem terminar processos, mudar portas, limpar cookies ou repetir operações Auth reais.
