@@ -1,5 +1,7 @@
 # Primeiro login AT sem bootstrap
 
+Estado de fecho actualizado: [AUTH-02-AT-LOGOUT-01 APTO](relatorio-homologacao-at.md), com logout na versão d0d8b90, zero sessões e confirmação da rota privada protegida. Os registos abaixo preservam a investigação e as pendências tal como existiam em cada momento; não substituem esse fecho. Bootstrap e concessões continuam não executados.
+
 Data: 5 de Novembro de 2026, Africa/Luanda. Base observada: bda4981b77015e9316a841ab5c21cbb5d656fd56. Branch fase-1-autenticacao-permissoes. Este documento não autoriza activação, atribuição de papéis ou bootstrap.
 
 ## Evidência real apresentada pelo responsável

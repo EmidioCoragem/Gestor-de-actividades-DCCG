@@ -1,6 +1,6 @@
 # Etapa C — Homologação funcional e de segurança
 
-Estado: plano preparado; homologação remota NÃO EXECUTADA. Base de referência: commit 150f1c3 na branch fase-1-autenticacao-permissoes. As 67 aprovações anteriores são históricas e não validam os novos mecanismos aqui propostos.
+Estado actualizado em 5 de Novembro de 2026: homologação parcial. O subcaso [AUTH-02-AT-LOGOUT-01](relatorio-homologacao-at.md) está APTO, com código d0d8b90 e evidências reais fornecidas pelo responsável. O restante grupo AUTH-02 e os outros cenários mantêm as pendências registadas no CSV. A base inicial deste plano foi o commit 150f1c3 na branch fase-1-autenticacao-permissoes; as 67 aprovações iniciais são históricas e não homologam os novos mecanismos.
 
 ## Âmbito e salvaguardas
 
@@ -31,8 +31,10 @@ O plano de controlo positivo é obrigatório: confirmar previamente que A, B e r
 
 ## Bootstrap futuro, sujeito a autorização
 
+Para o próximo bloco prevalece o [plano controlado AT/AF](bootstrap-at-af.md), incluindo a condição prévia de segregação identificada na RPC. Nenhuma escrita está autorizada. AT já existe e está inactive/zero papéis/zero sessões após o caso aprovado.
+
 1. Confirmar o projecto de desenvolvimento, os inventários e a cópia privada de configurações. Definir manifest privado de aliases, emails, UUID reais e identificador da execução. Os UUID locais não são UUID remotos.
-2. Autorizar e criar AT e AF por mecanismo suportado do Supabase. Registar confirmação de email e estado do perfil separadamente. Não inserir directamente em auth.users nem desactivar confirmação de email.
+2. Reutilizar AT existente, sem recriar. Inventariar AF; apenas se ausente e depois de autorização separada, criar AF por mecanismo suportado do Supabase. Registar confirmação de email e estado do perfil separadamente. Não inserir directamente em auth.users nem desactivar confirmação de email.
 3. Por operação de manutenção aprovada, atribuir exclusivamente technical_admin global a AT, activar o seu perfil e registar operador, hora e UUID. A criação da conta Auth não equivale a atribuição de poder funcional.
 4. Por operação de manutenção aprovada, activar AF e atribuir access_admin mais c_org_admin global. Não utilizar auto-atribuição pela aplicação, contornar guardas RPC ou conceder technical_admin a AF.
 5. Terminar o bootstrap privilegiado. AT gere convites e estados de contas; AF configura a organização e atribui papéis funcionais dos outros utilizadores. AF não modifica o seu próprio papel. Qualquer alteração posterior dos papéis do próprio AF exige manutenção autorizada e rastreável.

@@ -1,5 +1,9 @@
 # Plano para concluir a Fase 1 no Supabase Free
 
+## Estado parcial — 5 de Novembro de 2026
+
+O [caso real AUTH-02-AT-LOGOUT-01](etapa-c/relatorio-homologacao-at.md) está APTO: logout HTTP 204, zero sessões, AT inactive/zero papéis e rota / protegida após o logout. Só este subcaso é fechado; os grupos restantes continuam pendentes. AT já existe e não deve ser recriado. O [plano de bootstrap AT/AF](etapa-c/bootstrap-at-af.md) é a referência para o próximo bloco, condicionado à revisão da segregação e a autorizações próprias. As propostas iniciais de contas e configurações abaixo são históricas, não instruções para repetir criação, configuração ou migração no projecto corrente.
+
 ## Etapa C — plano detalhado vigente
 
 O [plano detalhado da Etapa C](etapa-c/plano.md) substitui a proposta inicial de cinco contas abaixo por oito identidades fictícias, com separação entre administração técnica e funcional, dois departamentos e mecanismos locais de ensaio. A proposta abaixo fica como histórico. Nenhuma conta ou mutação remota foi executada nesta preparação. Consultar também os [descritores PostgREST](etapa-c/postgrest-pedidos.json) e o [modelo de evidências](etapa-c/evidencias.csv).

@@ -1,5 +1,13 @@
 # Relatório da Fase 1
 
+## Homologação parcial — 5 de Novembro de 2026
+
+**AUTH-02-AT-LOGOUT-01: APTO**, por autorização expressa de registo documental do responsável. No código d0d8b90, o clique pessoal de logout regressou a /entrar; Auth e API gateway registaram HTTP 204; a leitura final confirmou uma conta/email confirmado/perfil inactive, zero papéis e zero sessões Auth. O responsável confirmou uma única visita posterior a /, redireccionada para /entrar sem Dashboard, menus administrativos ou dados empresariais. Ver [evidências, origem e limites do ensaio](etapa-c/relatorio-homologacao-at.md) e [CSV por cenário](etapa-c/evidencias.csv).
+
+Este caso não homologa toda a Fase 1, outros dispositivos, todos os tempos de expiração, perfis activos ou a separação AT/AF. Os relatos iniciais abaixo mantêm valor histórico; para o fecho deste caso prevalece esta actualização. Não foi executado bootstrap nem foram atribuídos papéis ou activados perfis.
+
+O [próximo bloco AT/AF](etapa-c/bootstrap-at-af.md) está apenas planeado e exige autorizações separadas. A revisão estática identificou uma condição prévia de segregação nas concessões/capacidades técnicas a terceiros; o plano impede avançar para o bootstrap sem a resolver. A autorização actual limita-se à documentação, sem código, SQL remoto, criação de AF, emails, migrações, publicação ou merge.
+
 ## Recuperação PKCE com SMTP padrão — 4 de Novembro de 2026
 
 Implementado o callback code com exchangeCodeForSession, mantendo token_hash/verifyOtp. As Server Actions/Route Handlers exigem escrita de cookies; a intenção de recuperação é ligada ao verificador e destinatário e a definição de password exige uma autorização curta de uso único ligada à sessão validada. Nenhuma operação remota foi executada. Ver [procedimento vigente, limites e autorização futura](etapa-c/pkce-smtp-padrao.md) e [verificação local desta alteração](etapa-c/verificacao-pkce.md). Os estados efémeros são locais ao processo Node, adequados ao ensaio privado no Codespaces; várias instâncias de produção exigiriam armazenamento partilhado e revisão específica.

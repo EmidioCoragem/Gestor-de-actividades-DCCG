@@ -21,6 +21,8 @@ O assistente não criou projectos, recursos de produção ou credenciais. O resp
 
 ## Primeiro responsável de acessos — operação de bootstrap controlada
 
+No projecto corrente, seguir exclusivamente o [plano AT/AF revisto](etapa-c/bootstrap-at-af.md), ainda não autorizado para execução. AT já existe. O exemplo SQL genérico abaixo fica como histórico de instalação e não deve ser executado para combinar poderes técnicos e funcionais neste ensaio.
+
 Não existe uma conta pré-criada nem atribuição administrativa automática. O operador autorizado do projecto deve criar/convidar a primeira conta **depois** da migração (as já existentes recebem perfil inactivo na migração) e confirmar o UUID em Authentication → Users.
 
 No SQL Editor do projecto de desenvolvimento, o operador poderá, após aprovação do responsável, executar uma transacção adaptada ao UUID real:

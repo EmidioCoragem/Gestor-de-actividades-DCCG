@@ -16,3 +16,4 @@ PERM-01,,,,,,,,,,,,PENDENTE,
 DEL-01,,,,,,,,,,,,PENDENTE,
 AUD-01,,,,,,,,,,,,PENDENTE,
 UI-01,,,,,,,,,,,,PENDENTE,
+AUTH-02-AT-LOGOUT-01,Portal HTTPS privado + Auth/API + SQL READ ONLY,AT,Auth global; sem concessoes funcionais,d0d8b90; AT inactive; zero papeis; uma sessao; Private,,,Retorno a entrada; zero sessoes; inactive; zero papeis; raiz protegida,15:54:30 no painel; POST logout 204; SQL 1/1/1/true/0/0; raiz redirecciona para entrar,204,Conta e email confirmado preservados; sem acesso funcional,Capturas e confirmacao do responsavel; ver relatorio-homologacao-at.md,APTO,Responsavel; registo documental autorizado
