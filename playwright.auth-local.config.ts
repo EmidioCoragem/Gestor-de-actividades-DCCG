@@ -1,12 +1,15 @@
 import { defineConfig } from "@playwright/test";
 import base from "./playwright.config";
 
-// Processo Next separado; Auth HTTPS fictício em loopback, sem Supabase remoto.
+// Cópia temporária independente; Auth HTTPS fictício, sem .next/.env do portal.
 export default defineConfig({
   testDir: "./tests/e2e",
   testMatch: "auth-local-flow.spec.ts",
   workers: 1,
   fullyParallel: false,
+  // Inclui a compilação inicial das rotas na cópia Webpack sem cache partilhada.
+  timeout: 60_000,
+  outputDir: "test-results/auth-local",
   projects: base.projects,
   use: { ...base.use, baseURL: "http://127.0.0.1:3100", trace: "off", video: "off", screenshot: "off" },
   webServer: {

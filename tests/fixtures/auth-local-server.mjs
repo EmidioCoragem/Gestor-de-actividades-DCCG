@@ -6,8 +6,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawn, execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { fileURLToPath } from "node:url";
+import { prepareAuthLocalApp, authLocalEnvironment } from "./auth-local-workspace.ts";
 
 const dir = mkdtempSync(join(tmpdir(), "gestor-auth-local-"));
+const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
 const cert = join(dir, "cert.pem");
 const key = join(dir, "key.pem");
 let child;
@@ -16,10 +19,13 @@ const servers = [];
 function stop(code = 0) {
   if (stopping) return;
   stopping = true;
-  child?.kill("SIGTERM");
   for (const server of servers) server.close();
-  rmSync(dir, { recursive: true, force: true });
   process.exitCode = code;
+  const cleanup = () => rmSync(dir, { recursive: true, force: true });
+  if (child?.pid && child.exitCode === null && child.signalCode === null) {
+    child.once("close", cleanup);
+    child.kill("SIGTERM");
+  } else cleanup();
 }
 process.on("SIGTERM", () => stop());
 process.on("SIGINT", () => stop());
@@ -133,19 +139,21 @@ await Promise.all([
   new Promise((resolve) => control.listen(4344, "127.0.0.1", resolve)),
 ]);
 if (!stopping) {
-  child = spawn(process.execPath, ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", "3100"], {
-    stdio: "inherit",
-    env: { ...process.env,
-      CODESPACES: "",
-      NODE_ENV: "development",
-      NEXT_PUBLIC_SUPABASE_URL: "https://127.0.0.1:4343",
-      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "local-public-placeholder",
-      SUPABASE_SERVICE_ROLE_KEY: "",
-      APP_ORIGIN: "http://127.0.0.1:3100",
-      // Confiança limitada ao certificado temporário do simulador; TLS continua validado.
-      NODE_EXTRA_CA_CERTS: cert,
-    },
-  });
-  child.on("error", () => stop(1));
-  child.on("exit", (code) => stop(code ?? 1));
+  let appDirectory;
+  try { appDirectory = prepareAuthLocalApp(projectRoot, join(dir, "app")); }
+  catch {
+    console.error("Não foi possível preparar a cópia isolada do simulador.");
+    stop(1);
+  }
+  if (appDirectory) {
+    // Webpack permite resolver node_modules por symlink fora da cópia temporária.
+    // O Next real conserva o seu bundler, .next, lock e ficheiros TypeScript.
+    child = spawn(process.execPath, [join(projectRoot, "node_modules/next/dist/bin/next"), "dev", "--webpack", "--hostname", "127.0.0.1", "--port", "3100"], {
+      cwd: appDirectory,
+      stdio: "inherit",
+      env: authLocalEnvironment(process.env, cert),
+    });
+    child.on("error", () => stop(1));
+    child.on("exit", (code) => stop(code ?? 1));
+  }
 }
