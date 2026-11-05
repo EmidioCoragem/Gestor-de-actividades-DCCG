@@ -1,5 +1,7 @@
 import { AuthPage } from "@/components/auth-page";
-import { signOut } from "@/modules/auth/actions";
+import { ProtectedAuthForm } from "@/components/protected-auth-form";
+import { signOutFromRestricted } from "@/modules/auth/actions";
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Acesso restrito" };
 export default function Page() {
   return (
@@ -9,9 +11,7 @@ export default function Page() {
         configuração de permissões ainda não está disponível. Contacte o
         responsável de acessos.
       </p>
-      <form action={signOut}>
-        <button className="button">Terminar sessão e voltar à entrada</button>
-      </form>
+      <ProtectedAuthForm action={signOutFromRestricted} mode="logout" />
     </AuthPage>
   );
 }

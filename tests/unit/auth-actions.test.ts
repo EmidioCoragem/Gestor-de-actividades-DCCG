@@ -12,7 +12,7 @@ vi.mock("@/modules/auth/environment", async (original) => ({
   ...await original<typeof import("../../src/modules/auth/environment")>(),
   supabaseIsConfigured: f.configured,
 }));
-import { changePassword, recoverAccess } from "../../src/modules/auth/actions";
+import { changePassword, recoverAccess, signOut, signOutFromRestricted } from "../../src/modules/auth/actions";
 import { issuePasswordSetup, sessionIdentity } from "../../src/modules/auth/password-setup";
 const origin = "https://approved-preview.example.invalid";
 const password = "Local-Synthetic-Only-123";
@@ -134,5 +134,44 @@ describe("Definição de palavra-passe sem privilégios funcionais", () => {
     await changePassword({ message: "" }, data);
     expect(f.update).toHaveBeenCalledOnce();
     expect(f.setCookie).toHaveBeenCalledWith("gestor-password-setup", "", expect.objectContaining({ httpOnly: true, secure: true, maxAge: 0 }));
+  });
+});
+
+describe("Logout explícito sem privilégios administrativos", () => {
+  it("logout restrito exige escrita de cookies e só redirecciona após sucesso", async () => {
+    await expect(signOutFromRestricted()).rejects.toThrow("LOCAL_REDIRECT");
+    expect(f.create).toHaveBeenCalledExactlyOnceWith({ requireCookieWrites: true });
+    expect(f.signOut).toHaveBeenCalledOnce();
+    expect(f.redirect).toHaveBeenCalledExactlyOnceWith("/entrar");
+    expect(f.signOut.mock.invocationCallOrder[0]).toBeLessThan(f.redirect.mock.invocationCallOrder[0]);
+    expect(f.recover).not.toHaveBeenCalled(); expect(f.update).not.toHaveBeenCalled();
+  });
+  it("erro do fornecedor não redirecciona nem revela detalhes", async () => {
+    f.signOut.mockResolvedValue({ error: { message: "synthetic-provider-detail" } });
+    const result = await signOutFromRestricted();
+    expect(result.message).toContain("Não foi possível terminar");
+    expect(result.message).not.toContain("synthetic-provider-detail");
+    expect(f.redirect).not.toHaveBeenCalled();
+  });
+  it("falha de Set-Cookie interrompe logout e não anuncia sucesso", async () => {
+    f.signOut.mockRejectedValue(new Error("synthetic-cookie-write-detail"));
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const result = await signOutFromRestricted();
+    expect(result.message).toContain("Não foi possível terminar");
+    expect(result.message).not.toContain("synthetic-cookie-write-detail");
+    expect(f.redirect).not.toHaveBeenCalled(); expect(log).not.toHaveBeenCalled();
+  });
+  it("configuração ausente não cria cliente nem redirecciona", async () => {
+    f.configured.mockReturnValue(false);
+    expect((await signOutFromRestricted()).message).toContain("Não foi possível terminar");
+    expect(f.create).not.toHaveBeenCalled(); expect(f.redirect).not.toHaveBeenCalled();
+  });
+  it("logout existente também verifica erro e escrita de cookies", async () => {
+    await expect(signOut()).rejects.toThrow("LOCAL_REDIRECT");
+    expect(f.create).toHaveBeenCalledExactlyOnceWith({ requireCookieWrites: true });
+    f.redirect.mockClear();
+    f.signOut.mockResolvedValue({ error: { message: "synthetic-private-detail" } });
+    await expect(signOut()).rejects.toThrow("Não foi possível terminar a sessão.");
+    expect(f.redirect).not.toHaveBeenCalled();
   });
 });

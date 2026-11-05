@@ -118,10 +118,22 @@ export async function changePassword(
   // redirect lança uma excepção de controlo Next.js; fica fora do catch.
   redirect("/entrar?mensagem=palavra-passe-actualizada");
 }
-export async function signOut() {
-  if (supabaseIsConfigured()) {
-    const db = await createSupabaseServerClient();
-    await db.auth.signOut();
+async function endSession(): Promise<boolean> {
+  if (!supabaseIsConfigured()) return false;
+  try {
+    const db = await createSupabaseServerClient({ requireCookieWrites: true });
+    const { error } = await db.auth.signOut();
+    return !error;
+  } catch {
+    return false;
   }
+}
+export async function signOutFromRestricted(): Promise<ActionResult> {
+  if (!await endSession())
+    return { message: "Não foi possível terminar a sessão. Verifique a ligação e contacte o responsável." };
+  redirect("/entrar");
+}
+export async function signOut() {
+  if (!await endSession()) throw new Error("Não foi possível terminar a sessão.");
   redirect("/entrar");
 }

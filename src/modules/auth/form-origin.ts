@@ -7,7 +7,7 @@ export const formOriginCookie = "__Host-gestor-form-origin";
 export const formOriginField = "gestor_form_origin";
 export const originDiagnosticPath = "/diagnostico-csrf";
 export const originDiagnosticCookie = "__Host-gestor-origin-diagnostic";
-const authForms = new Set(["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe"]);
+const authForms = new Set(["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe", "/acesso-restrito"]);
 const noncePattern = /^[a-f0-9]{64}$/;
 const maximumFormBytes = 16 * 1024;
 

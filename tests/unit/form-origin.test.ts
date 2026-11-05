@@ -232,4 +232,22 @@ describe("Origem dos formulários privados Codespaces", () => {
     expect((await proxy(post({}, undefined, originDiagnosticPath))).status).toBe(403);
     expect(sdk.create).not.toHaveBeenCalled();
   });
+  it("página restrita emite prova CSRF própria para terminar sessão", async () => {
+    const response = await proxy(new NextRequest(origin + "/acesso-restrito"));
+    expect(response.cookies.get(formOriginCookie)).toMatchObject({ secure: true, httpOnly: true, sameSite: "strict" });
+    expect(response.headers.get("cache-control")).toContain("no-store");
+  });
+  it("logout restrito adapta origem apenas com prova válida", async () => {
+    const req = post({ origin: "http://localhost:3000" }, undefined, "/acesso-restrito");
+    expect((await protectFormOrigin(req)).blocked).toBe(false);
+    expect(req.headers.get("origin")).toBe(origin);
+  });
+  it.each<Record<string, string>>([
+    { origin: "https://forged.invalid" },
+    { cookie: "" },
+  ])("logout restrito recusa falsificação ou ausência de prova: %j", async headers => {
+    const req = post(headers, undefined, "/acesso-restrito");
+    expect((await proxy(req)).status).toBe(403);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
 });

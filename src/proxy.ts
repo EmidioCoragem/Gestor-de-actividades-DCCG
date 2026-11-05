@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
     const result = NextResponse.next({ request: { headers: request.headers } });
     if (protection.issuedNonce)
       result.cookies.set(diagnostic ? originDiagnosticCookie : formOriginCookie, protection.issuedNonce, formOriginCookieOptions);
-    if (diagnostic || ["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe"].includes(request.nextUrl.pathname)) {
+    if (diagnostic || ["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe", "/acesso-restrito"].includes(request.nextUrl.pathname)) {
       result.headers.set("Cache-Control", "private, no-store");
       result.headers.set("Referrer-Policy", "no-referrer");
     }

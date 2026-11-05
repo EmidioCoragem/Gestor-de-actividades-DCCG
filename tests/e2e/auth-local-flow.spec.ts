@@ -133,3 +133,29 @@ test("confirmação diferente não consome a autorização PKCE", async ({ page,
   await page.getByRole("button", { name: "Guardar palavra-passe" }).click();
   await expect(page).toHaveURL(/\/entrar\?mensagem=palavra-passe-actualizada$/);
 });
+
+test("logout na página restrita limpa a sessão fictícia sem alterar password", async ({ page, request }) => {
+  await page.goto("/auth/confirm?token_hash=local-recovery-only&type=recovery");
+  await expect(page).toHaveURL(/\/actualizar-palavra-passe$/);
+  await page.goto("/acesso-restrito");
+  await expect(page.getByRole("textbox")).toHaveCount(0);
+  await page.getByRole("button", { name: "Terminar sessão e voltar à entrada" }).click();
+  await expect(page).toHaveURL(/\/entrar$/);
+  const counts = await (await request.get("http://127.0.0.1:4344/counts")).json();
+  expect(counts.logouts).toBe(1);
+  expect(counts.updates).toBe(0); expect(counts.recoveries).toBe(0);
+  const cookieNames = (await page.context().cookies()).map(cookie => cookie.name);
+  expect(cookieNames.filter(name => /^sb-.+-auth-token(?:\.\d+)?$/.test(name))).toEqual([]);
+});
+
+test("logout restrito com falha não apresenta sessão terminada", async ({ page, request }) => {
+  await page.goto("/auth/confirm?token_hash=local-recovery-only&type=recovery");
+  await expect(page).toHaveURL(/\/actualizar-palavra-passe$/);
+  await request.post("http://127.0.0.1:4344/logout-failure");
+  await page.goto("/acesso-restrito");
+  await page.getByRole("button", { name: "Terminar sessão e voltar à entrada" }).click();
+  await expect(page.getByRole("status")).toContainText("Não foi possível terminar", { timeout: 15000 });
+  await expect(page).toHaveURL(/\/acesso-restrito$/);
+  const counts = await (await request.get("http://127.0.0.1:4344/counts")).json();
+  expect(counts.updates).toBe(0); expect(counts.recoveries).toBe(0);
+});

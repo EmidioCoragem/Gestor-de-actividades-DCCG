@@ -8,7 +8,7 @@ export function AuthForm({
   formOriginNonce,
 }: {
   action: (state: ActionResult, form: FormData) => Promise<ActionResult>;
-  mode: "login" | "recovery" | "password";
+  mode: "login" | "recovery" | "password" | "logout";
   disabled?: boolean;
   formOriginNonce?: string;
 }) {
@@ -16,7 +16,7 @@ export function AuthForm({
   return (
     <form action={formAction} className="data-form">
       {formOriginNonce && <input type="hidden" name="gestor_form_origin" value={formOriginNonce} />}
-      {mode !== "password" && (
+      {(mode === "login" || mode === "recovery") && (
         <label>
           Correio electrónico
           <input
@@ -29,7 +29,7 @@ export function AuthForm({
           />
         </label>
       )}
-      {mode !== "recovery" && (
+      {(mode === "login" || mode === "password") && (
         <label>
           Palavra-passe
           <input
@@ -66,7 +66,9 @@ export function AuthForm({
             ? "Entrar"
             : mode === "recovery"
               ? "Enviar instruções"
-              : "Guardar palavra-passe"}
+              : mode === "logout"
+                ? "Terminar sessão e voltar à entrada"
+                : "Guardar palavra-passe"}
       </button>
       <p
         role="status"
