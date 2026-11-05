@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 vi.mock("server-only", () => ({}));
 const sdk = vi.hoisted(() => ({ create: vi.fn() }));
 vi.mock("@supabase/ssr", () => ({ createServerClient: sdk.create }));
-import { protectFormOrigin, codespacesFormOrigin, formOriginCookie, formOriginField } from "../../src/modules/auth/form-origin";
+import { protectFormOrigin, codespacesFormOrigin, formOriginCookie, formOriginField, originDiagnosticCookie, originDiagnosticPath } from "../../src/modules/auth/form-origin";
 import { proxy } from "../../src/proxy";
 
 const origin = "https://fixture-codespace-3000.app.github.dev";
@@ -15,6 +15,7 @@ const require = createRequire(import.meta.url);
 
 beforeEach(() => {
   vi.stubEnv("CODESPACES", "true");
+  vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "");
   vi.stubEnv("CODESPACE_NAME", "fixture-codespace");
   vi.stubEnv("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN", "app.github.dev");
   vi.stubEnv("NODE_ENV", "development");
@@ -25,10 +26,10 @@ beforeEach(() => {
 });
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 
-function post(headers: Record<string, string> = {}, body?: BodyInit) {
+function post(headers: Record<string, string> = {}, body?: BodyInit, pathname = "/recuperar-acesso") {
   const form = new FormData();
   form.set(formOriginField, nonce);
-  return new NextRequest("http://localhost:3000/recuperar-acesso", {
+  return new NextRequest(`http://localhost:3000${pathname}`, {
     method: "POST", body: body ?? form,
     headers: {
       host: "localhost:3000", "x-forwarded-host": host,
@@ -174,5 +175,61 @@ describe("Origem dos formulários privados Codespaces", () => {
     expect(isCsrfOriginAllowed("localhost:3000", allowed)).toBe(false);
     expect(isCsrfOriginAllowed("attacker.invalid", allowed)).toBe(false);
     expect(isCsrfOriginAllowed(host, allowed)).toBe(true);
+  });
+  it("diagnóstico desactivado devolve 404 antes do SDK", async () => {
+    expect((await proxy(new NextRequest(origin + originDiagnosticPath))).status).toBe(404);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("diagnóstico exige Codespaces de desenvolvimento identificado", async () => {
+    vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "1");
+    vi.stubEnv("CODESPACES", "");
+    expect((await proxy(new NextRequest(origin + originDiagnosticPath))).status).toBe(404);
+    vi.stubEnv("CODESPACES", "true");
+    vi.stubEnv("NODE_ENV", "production");
+    expect((await proxy(new NextRequest(origin + originDiagnosticPath))).status).toBe(404);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("GET diagnóstico usa cookie próprio sem ler ou renovar sessão Supabase", async () => {
+    vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "1");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://fixture.example.invalid");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "local-public-placeholder");
+    const req = new NextRequest(origin + originDiagnosticPath, {
+      headers: { cookie: `${formOriginCookie}=${nonce}; synthetic-auth-session=fixture-only` },
+    });
+    const response = await proxy(req);
+    expect(response.cookies.get(originDiagnosticCookie)).toMatchObject({ secure: true, httpOnly: true, sameSite: "strict" });
+    expect(response.cookies.get(formOriginCookie)).toBeUndefined();
+    expect(response.cookies.get("synthetic-auth-session")).toBeUndefined();
+    expect(req.cookies.get(formOriginCookie)?.value).toBe(nonce);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("POST diagnóstico legítimo preserva a validação de origem sem SDK", async () => {
+    vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "1");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://fixture.example.invalid");
+    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "local-public-placeholder");
+    const req = post({ origin: "http://localhost:3000", cookie: `${originDiagnosticCookie}=${nonce}` }, undefined, originDiagnosticPath);
+    const response = await proxy(req);
+    expect(response.status).toBe(200);
+    expect(req.headers.get("origin")).toBe(origin);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("POST diagnóstico com origem forjada é recusado antes do SDK", async () => {
+    vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "1");
+    const req = post({ origin: "https://forged.invalid", cookie: `${originDiagnosticCookie}=${nonce}` }, undefined, originDiagnosticPath);
+    const response = await proxy(req);
+    expect(response.status).toBe(403);
+    expect(response.headers.get("x-gestor-csrf-diagnostic")).toBe("rejected");
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("POST diagnóstico com prova adulterada é recusado antes do SDK", async () => {
+    vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "1");
+    const req = post({ cookie: `${originDiagnosticCookie}=${other}` }, undefined, originDiagnosticPath);
+    expect((await proxy(req)).status).toBe(403);
+    expect(sdk.create).not.toHaveBeenCalled();
+  });
+  it("cookie Auth não serve como prova no diagnóstico", async () => {
+    vi.stubEnv("GESTOR_CSRF_DIAGNOSTIC", "1");
+    expect((await proxy(post({}, undefined, originDiagnosticPath))).status).toBe(403);
+    expect(sdk.create).not.toHaveBeenCalled();
   });
 });

@@ -5,6 +5,8 @@ import { applicationOrigin } from "./environment";
 
 export const formOriginCookie = "__Host-gestor-form-origin";
 export const formOriginField = "gestor_form_origin";
+export const originDiagnosticPath = "/diagnostico-csrf";
+export const originDiagnosticCookie = "__Host-gestor-origin-diagnostic";
 const authForms = new Set(["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe"]);
 const noncePattern = /^[a-f0-9]{64}$/;
 const maximumFormBytes = 16 * 1024;
@@ -24,6 +26,12 @@ export function codespacesFormOrigin(): string | null {
     origin !== `https://${name}-3000.${domain}`
   ) throw new Error("Configuração de origem Codespaces inválida.");
   return origin;
+}
+
+export function originDiagnosticEnabled(): boolean {
+  try {
+    return process.env.GESTOR_CSRF_DIAGNOSTIC === "1" && Boolean(codespacesFormOrigin());
+  } catch { return false; }
 }
 
 export const formOriginCookieOptions = {
@@ -70,17 +78,19 @@ async function submittedNonce(request: NextRequest): Promise<string | null> {
 export type FormOriginProtection = { blocked: boolean; issuedNonce?: string };
 
 export async function protectFormOrigin(request: NextRequest): Promise<FormOriginProtection> {
-  if (!authForms.has(request.nextUrl.pathname)) return { blocked: false };
+  const diagnostic = request.nextUrl.pathname === originDiagnosticPath && originDiagnosticEnabled();
+  if (!authForms.has(request.nextUrl.pathname) && !diagnostic) return { blocked: false };
   let origin: string | null;
   try { origin = codespacesFormOrigin(); } catch { return { blocked: true }; }
   if (!origin) return { blocked: false };
-  const nonces = request.cookies.getAll(formOriginCookie);
+  const cookieName = diagnostic ? originDiagnosticCookie : formOriginCookie;
+  const nonces = request.cookies.getAll(cookieName);
   const cookieOccurrences = (request.headers.get("cookie") ?? "").split(";")
-    .filter(part => part.trim().startsWith(`${formOriginCookie}=`)).length;
+    .filter(part => part.trim().startsWith(`${cookieName}=`)).length;
   if (request.method === "GET") {
     if (nonces.length === 1 && noncePattern.test(nonces[0].value)) return { blocked: false };
     const issuedNonce = randomBytes(32).toString("hex");
-    request.cookies.set(formOriginCookie, issuedNonce);
+    request.cookies.set(cookieName, issuedNonce);
     return { blocked: false, issuedNonce };
   }
   if (request.method !== "POST") return { blocked: false };

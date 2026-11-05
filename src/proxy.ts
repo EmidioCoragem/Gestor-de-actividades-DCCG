@@ -2,24 +2,34 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { readSupabaseConfig } from "@/lib/supabase/config";
 import { applicationOrigin } from "@/modules/auth/environment";
-import { protectFormOrigin, formOriginCookie, formOriginCookieOptions } from "@/modules/auth/form-origin";
+import { protectFormOrigin, formOriginCookie, formOriginCookieOptions, originDiagnosticCookie, originDiagnosticEnabled, originDiagnosticPath } from "@/modules/auth/form-origin";
 export async function proxy(request: NextRequest) {
+  const diagnostic = request.nextUrl.pathname === originDiagnosticPath;
+  if (diagnostic && !originDiagnosticEnabled()) return new NextResponse(null, {
+    status: 404,
+    headers: { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" },
+  });
   const protection = await protectFormOrigin(request);
   if (protection.blocked) return new NextResponse("Pedido de formulário recusado.", {
     status: 403,
-    headers: { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" },
+    headers: {
+      "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer",
+      ...(diagnostic ? { "X-Gestor-CSRF-Diagnostic": "rejected" } : {}),
+    },
   });
   const next = () => {
     const result = NextResponse.next({ request: { headers: request.headers } });
     if (protection.issuedNonce)
-      result.cookies.set(formOriginCookie, protection.issuedNonce, formOriginCookieOptions);
-    if (["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe"].includes(request.nextUrl.pathname)) {
+      result.cookies.set(diagnostic ? originDiagnosticCookie : formOriginCookie, protection.issuedNonce, formOriginCookieOptions);
+    if (diagnostic || ["/entrar", "/recuperar-acesso", "/actualizar-palavra-passe"].includes(request.nextUrl.pathname)) {
       result.headers.set("Cache-Control", "private, no-store");
       result.headers.set("Referrer-Policy", "no-referrer");
     }
     return result;
   };
   let response = next();
+  // Diagnóstico não lê nem renova sessões e nunca cria um cliente Supabase.
+  if (diagnostic) return response;
   let config;
   let origin;
   try {

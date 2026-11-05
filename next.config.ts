@@ -24,7 +24,7 @@ const config: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         ],
       },
-      ...["/auth/confirm", "/actualizar-palavra-passe", "/recuperar-acesso", "/entrar"].map((source) => ({
+      ...["/auth/confirm", "/actualizar-palavra-passe", "/recuperar-acesso", "/entrar", "/diagnostico-csrf"].map((source) => ({
         source,
         headers: [
           { key: "Cache-Control", value: "private, no-store, max-age=0" },
