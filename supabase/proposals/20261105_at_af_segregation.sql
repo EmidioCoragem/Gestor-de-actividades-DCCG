@@ -1,0 +1,2 @@
+-- Rascunho historico substituido por ../migrations/202611050001_at_af_segregation.sql.
+-- Nao executar este ficheiro: nao contem instalacao nem reaplica a migracao.

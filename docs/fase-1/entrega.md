@@ -8,6 +8,14 @@ Este caso não homologa toda a Fase 1, outros dispositivos, todos os tempos de e
 
 O [próximo bloco AT/AF](etapa-c/bootstrap-at-af.md) está apenas planeado e exige autorizações separadas. A revisão estática identificou uma condição prévia de segregação nas concessões/capacidades técnicas a terceiros; o plano impede avançar para o bootstrap sem a resolver. A autorização actual limita-se à documentação, sem código, SQL remoto, criação de AF, emails, migrações, publicação ou merge.
 
+## Revisão de segregação AT/AF — 5 de Novembro de 2026
+
+A [auditoria local e proposta técnica](etapa-c/revisao-segregacao-at-af.md) identifica uma falha crítica nas regras actuais: access.manage permite concessão/revogação de technical_admin a terceiros e clonagem de users.manage. O bootstrap está **NÃO APTO** até correcção e homologação específicas. Preparados apenas documentação, testes em memória e rascunho SQL em supabase/proposals, fora das migrações executáveis. A migração original e o código de produção não foram alterados; nenhuma operação remota foi executada. Os resultados desta revisão e as validações ainda pendentes estão discriminados no relatório. A autorização desta tarefa amplia o âmbito local histórico de documentação para auditoria/proposta/testes, sem autorizar instalação ou bootstrap.
+
+## Implementação local da segregação AT/AF — 5 de Novembro de 2026
+
+Por autorização expressa, foi preparada a [correcção local com migração incremental e guarda na Server Action](etapa-c/implementacao-segregacao-at-af.md), acompanhada de testes adversariais, concorrência PostgreSQL nativa e checks de aplicação isolados. A migração original permanece intacta. Este bloco não altera o estado remoto nem autoriza bootstrap; os resultados efectivamente aprovados, bloqueados e pendentes constam do relatório técnico.
+
 ## Recuperação PKCE com SMTP padrão — 4 de Novembro de 2026
 
 Implementado o callback code com exchangeCodeForSession, mantendo token_hash/verifyOtp. As Server Actions/Route Handlers exigem escrita de cookies; a intenção de recuperação é ligada ao verificador e destinatário e a definição de password exige uma autorização curta de uso único ligada à sessão validada. Nenhuma operação remota foi executada. Ver [procedimento vigente, limites e autorização futura](etapa-c/pkce-smtp-padrao.md) e [verificação local desta alteração](etapa-c/verificacao-pkce.md). Os estados efémeros são locais ao processo Node, adequados ao ensaio privado no Codespaces; várias instâncias de produção exigiriam armazenamento partilhado e revisão específica.

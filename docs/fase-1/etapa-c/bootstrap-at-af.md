@@ -26,6 +26,14 @@ Uma eventual correcção de servidor/RPC exige autorização própria para códi
 
 Os testes isolados devem incluir um terceiro alvo activo e um papel ainda não detido, além de uma concessão funcional permitida como controlo positivo. Uma recusa por duplicado, alvo inexistente ou sessão inválida não comprova a barreira de segregação pretendida. Conferir a ausência de efeitos, não apenas a mensagem de erro.
 
+## Implementação local de segurança — instalação e bootstrap pendentes
+
+A [auditoria AT/AF de 5 de Novembro](revisao-segregacao-at-af.md) reproduz localmente os caminhos de concessão/revogação técnica e clonagem de capacidades e prepara um protótipo SQL fora da pasta de migrações, com testes adversariais e controlos positivos. Não foi alterada a migração original nem instalado qualquer SQL no Supabase. O bootstrap permanece bloqueado: primeiro aprovar a política, completar a validação PostgreSQL/ACLs e a guarda de servidor proposta, depois autorizar separadamente a migração incremental e os lotes de manutenção.
+
+A [implementação local autorizada](implementacao-segregacao-at-af.md) acrescenta uma migração incremental e guarda na Server Action. A conclusão dos testes locais não autoriza instalação, activações ou concessões reais. Consultar esse relatório para os resultados actuais e riscos residuais.
+
+A manutenção técnica proposta exige identidade SQL nominal, pertença temporária a papel NOLOGIN externo à API, ausência de JWT e referências de mudança/aprovação reconciliadas com registo privado independente. Não usar access.manage, sessão AT/AF, chave de serviço ou auth.uid fictício como substitutos dessa autorização. Isto é uma proposta para decisão, não uma autorização de execução.
+
 ## Sequência proposta e autorizações necessárias
 
 1. **Inventário de leitura:** reconfirmar projecto de desenvolvimento, branch/versão, porta Private, diagnóstico desligado, estado AT e ausência de concessões inesperadas. Inventariar AF sem criar conta; conferir o catálogo real e as capacidades/concessões directas e indirectas. Reconciliar o catálogo remoto com o código revisto, sem executar chamadas mutadoras.

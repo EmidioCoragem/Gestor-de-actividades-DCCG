@@ -7,11 +7,12 @@ import { requirePermission, requireViewer } from "@/modules/auth/session";
 import { applicationOrigin } from "@/modules/auth/environment";
 import type { ActionResult } from "@/modules/auth/actions";
 import { validateMutation } from "./validation";
+import { permitsFunctionalMutation } from "./mutation-policy";
 export async function adminMutation(
   _state: ActionResult,
   form: FormData,
 ): Promise<ActionResult> {
-  await requireViewer();
+  const viewer = await requireViewer();
   const operation = String(form.get("operation") ?? "");
   const payload = validateMutation(operation, Object.fromEntries(form));
   if (!payload)
@@ -19,6 +20,12 @@ export async function adminMutation(
       message: "Verifique os campos obrigatórios e os formatos indicados.",
     };
   const db = await createSupabaseServerClient();
+  try {
+    if (!await permitsFunctionalMutation(db, viewer.id, operation, payload))
+      return { message: "Operação reservada ou incompatível com a segregação de funções. Nenhuma alteração foi aplicada." };
+  } catch {
+    return { message: "Não foi possível verificar a autorização. Nenhuma alteração foi aplicada." };
+  }
   const { error } = await db.rpc("admin_mutation", { operation, payload });
   if (error)
     return {
