@@ -1,5 +1,7 @@
 # Arquitectura — Fase 0
 
+> Documento histórico. A [arquitectura da Fase 1](fase-1/arquitectura.md#cenários-permanentes--decisão-aprovada) regista a decisão de 9 de Novembro de 2026 sobre os cenários empresarial e departamental. As descrições abaixo sobre autenticação e instalação pertencem à entrega da Fase 0.
+
 O portal serve uma empresa com várias unidades. A interface inicial não consulta serviços externos nem guarda dados. Pode abrir sem Supabase configurado. Nenhuma página implementa autenticação ou autorização: não introduzir informação confidencial nesta versão.
 
 ## Camadas

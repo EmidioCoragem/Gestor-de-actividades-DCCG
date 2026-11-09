@@ -1,5 +1,29 @@
 # Relatório da Fase 1
 
+## Progresso consolidado — 9 de Novembro de 2026
+
+**Registo exclusivamente documental aprovado pelo responsável**, reutilizando a revisão dos cinco agentes e as evidências anteriores. Sem nova auditoria, testes funcionais, SQL, migração, bootstrap, exportação, transferência ou alteração de infra-estrutura. Branch `fase-1-autenticacao-permissoes`, sem merge na main e sem início da Fase 2.
+
+| Área | Estado | Alcance e pendência |
+|---|---|---|
+| Cenários A — empresarial e B — departamental | Planeamento aprovado e registado | Código único, âmbito configurável e segurança equivalente; configuração A/B não implementada |
+| Funcionalidades e identidade visual | Requisitos originais preservados | Sem remoção de módulos ou alterações funcionais/visuais; fases futuras mantidas |
+| Google Drive | Opção definitiva aprovada no planeamento | Dados reais exigem autorização da conta/destino; pasta pessoal declarada apenas para fictícios cifrados |
+| Fundação da Fase 1 | Código existente; migração original já aplicada uma vez | Não repetir a original; homologação integral Auth/SMTP/PostgREST ainda pendente |
+| Inventário remoto de leitura | Encerrado e aceite com ressalvas | Não repetir sem motivo; db_pre_request efectivo indeterminado, sem impedimento SQL isoladamente demonstrado |
+| Incremental AT/AF | Preparada no código; não instalada remotamente | Aplicação única, pós-verificação e homologação activa sob autorização própria; bootstrap não executado |
+| Clientes PostgreSQL e age no Codespaces | Instalação/versões confirmadas por saídas do operador | Clientes 17.11 e age 1.1.1; não demonstram exportação ou restauro nem o estado do ambiente Cloud |
+| Ensaio criptográfico local | APTO no âmbito fictício observado | Conteúdo/SHA-256 coincidentes, adulteração recusada, modos 0700/0600 e limpeza concluída; chave descartável |
+| Recuperação PostgreSQL | Planeada; ainda não demonstrada | Complemento Auth/papéis, exportação privada, servidor isolado, restauro e reconciliação pendentes |
+| Custódia e cópias independentes | Estratégia preparada; não operacionalmente demonstrada | Sem chave empresarial definitiva ou envio de dados reais; mecanismo de custódia ainda por decidir |
+| Produção A ou B | Não homologada nem autorizada para entrada em serviço | Responsáveis, alojamento, isolamento, capacidade/custos, RPO/RTO e retenção por aprovar |
+
+As confirmações Codespaces/Supabase provêm dos resultados e declarações apresentados pelo responsável na preparação supervisionada, não de acesso remoto nesta tarefa. A ausência de confirmação de BitLocker/cifra de disco no Windows corporativo limita a decisão de custódia definitiva; não autoriza contornar políticas. A pasta privada permanente e a chave definitiva não foram criadas por esta actualização; o ensaio removido usou apenas área temporária e dados fictícios.
+
+Referências vigentes: [arquitectura e configurações propostas](arquitectura.md#cenários-permanentes--decisão-aprovada), [implantação e responsabilidades](supabase.md#plano-futuro-de-implantação) e [homologação parcial do logout](etapa-c/relatorio-homologacao-at.md). Os relatos seguintes conservam a versão e o âmbito históricos; não representam novas execuções ou homologação integral.
+
+**Caminho crítico:** delimitar dependências Auth/custódia → demonstrar recuperação PostgreSQL → decidir a instalação incremental AT/AF e verificar o estado instalado → concluir homologação da Fase 1. Cada operação exige autorização aplicável; fase seguinte e produção não começam automaticamente. Restauro de ensaio aprovado não autoriza reversão automática após COMMIT.
+
 ## Homologação parcial — 5 de Novembro de 2026
 
 **AUTH-02-AT-LOGOUT-01: APTO**, por autorização expressa de registo documental do responsável. No código d0d8b90, o clique pessoal de logout regressou a /entrar; Auth e API gateway registaram HTTP 204; a leitura final confirmou uma conta/email confirmado/perfil inactive, zero papéis e zero sessões Auth. O responsável confirmou uma única visita posterior a /, redireccionada para /entrar sem Dashboard, menus administrativos ou dados empresariais. Ver [evidências, origem e limites do ensaio](etapa-c/relatorio-homologacao-at.md) e [CSV por cenário](etapa-c/evidencias.csv).

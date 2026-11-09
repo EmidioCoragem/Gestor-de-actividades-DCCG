@@ -1,5 +1,43 @@
 # Configurar e homologar Supabase de desenvolvimento
 
+## Plano futuro de implantação
+
+**Planeamento aprovado em 9 de Novembro de 2026 (Africa/Luanda), sem execução autorizada por este documento.** Aplicam-se os [cenários empresarial e departamental](arquitectura.md#cenários-permanentes--decisão-aprovada), com base de código e segurança comuns. Nenhum cenário transforma automaticamente o ambiente actual de demonstração em produção.
+
+### Sequência proposta
+
+1. Aprovar responsável pelos dados, cenário/unidades, módulos da fase autorizada, orçamento, RPO/RTO e requisitos organizacionais. B não dispensa autorização para dados empresariais.
+2. Delimitar dependências Auth, aprovar custódia e demonstrar recuperação PostgreSQL isolada. O ensaio fictício age já aprovado será reutilizado, mas não demonstra restauro do banco.
+3. Concluir instalação incremental AT/AF, pós-verificação e homologação da Fase 1 sob autorizações específicas. Nunca repetir a migração original nem atribuir poderes por simples mudança de cenário.
+4. Aprovar separadamente alojamento, domínio/HTTPS, banco/projecto, segredos e destinos de recuperação de produção; não criar recursos a partir deste guia.
+5. Homologar configuração, isolamento por servidor/banco, acessibilidade, transporte real, operação e recuperação antes de entrar em serviço. A expansão B → A revê âmbito e capacidade sem duplicar a aplicação.
+
+### Requisitos mínimos de operação contínua
+
+- Alojamento adequado a Next.js/Node 24 em produção, domínio e HTTPS aprovados, manutenção e recuperação de versões. Codespaces não é alojamento de produção.
+- Supabase/PostgreSQL de produção separado do desenvolvimento, com capacidade, acessos e condições de continuidade avaliadas; não presumir que quotas gratuitas ou backups garantem disponibilidade.
+- Segredos protegidos, privilégios mínimos, administração nominal e segregação AT/AF. Rever estados Auth actualmente em memória perante reinícios/múltiplas instâncias antes de adoptar esse modelo de operação.
+- Logs sanitizados, monitorização, alertas de indisponibilidade/quota/falha de backup e responsáveis por incidentes e actualizações de segurança.
+- Execução suportada para tarefas agendadas, sem depender de navegador aberto ou Codespace activo. Aprovar capacidade e duração dessas tarefas antes de escolher a solução.
+- Drive autorizado, arquivos cifrados, segunda cópia independente, chave recuperável e ensaios de restauro. Anexos têm política e recuperação próprias; backup não substitui disponibilidade nem recria todos os serviços Supabase.
+
+### Responsabilidades futuras a atribuir
+
+| Responsável | Decisões e entregas |
+|---|---|
+| Responsável pelos dados / patrocinador autorizado | Autorizar cenário, dados, âmbito, retenção, disponibilidade e orçamento |
+| T.I. ou responsável operacional formalmente autorizado | Aprovar e operar alojamento, domínio/TLS, ambientes, acessos administrativos, actualizações, monitorização e incidentes |
+| Segurança / custódio designado | Aprovar conta Drive, partilhas, protecção/recuperação das contas e chaves, substituição e requisitos aplicáveis |
+| Operador de base de dados / recuperação | Manter âmbito/procedimentos das cópias, verificar integridade e demonstrar restauro/reconciliação |
+| Responsável funcional / departamento | Validar hierarquia, módulos, responsabilidades e concessões propostas, sem acumulação implícita AT/AF |
+| Qualidade e coordenação | Reunir evidências por versão/cenário, explicitar pendências e apresentar a decisão de entrada em serviço |
+
+São papéis a nomear, não poderes já atribuídos. Os subagentes Codex não substituem responsáveis humanos ou autorização institucional. Não reduzir as invariantes AT/AF para acomodar uma equipa pequena.
+
+**Pendências:** fornecedor, capacidade/custos, destino Drive para dados reais, custódia definitiva, valores RPO/RTO, retenção e responsáveis nominais. O Drive pessoal actualmente declarado só está autorizado para ensaios fictícios cifrados. Instalação, alteração Supabase, contas, exportação, transferências e publicação continuam a exigir autorizações próprias.
+
+## Desenvolvimento — instruções existentes
+
 Recuperação vigente de AT no ambiente Free: [PKCE com SMTP padrão](etapa-c/pkce-smtp-padrao.md). Usa ConfirmationURL sem editar modelos ou configurar SMTP. A implementação e o ensaio real são etapas separadas; não reaplicar migração, activar perfil ou atribuir papéis para concluir Auth.
 
 **Projecto corrente: migração já executada uma vez pelo responsável. Não executar novamente 202610300001_fase1.sql.** Os passos de configuração abaixo são o guia original para instalações novas, não autorização para repetir operações ou alterar o projecto corrente. Para este projecto, seguir [validação pós-migração](validacao-pos-migracao.md) e [plano de homologação](plano-homologacao.md). Contas, bootstrap, SMTP/URLs/Auth exigem nova autorização.

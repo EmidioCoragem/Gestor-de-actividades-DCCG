@@ -8,6 +8,8 @@ O código inclui Supabase Auth com sessões verificadas, rotas privadas, convite
 
 Os módulos de actividades, fecho, KPIs, planeamento e relatórios continuam como fundação das fases futuras; não há cálculos ou dados empresariais fictícios. Centros de Custo e SAP/Primavera têm apenas modelo/contratos/documentação, sem importador ou conectores reais. Não foi iniciada a Fase 2.
 
+Planeamento aprovado em 9 de Novembro de 2026: [cenários permanentes empresarial e departamental](docs/fase-1/arquitectura.md#cenários-permanentes--decisão-aprovada), com código único, âmbito organizacional configurável e segurança equivalente. Google Drive é opção definitiva para backups cifrados com age, sujeita a autorização dos dados/destino, custódia das chaves, retenção e restauro. Este planeamento não implementa configuração A/B nem autoriza produção ou dados empresariais em Drive pessoal. Ver [implantação e responsabilidades](docs/fase-1/supabase.md#plano-futuro-de-implantação) e [progresso consolidado](docs/fase-1/entrega.md#progresso-consolidado--9-de-novembro-de-2026).
+
 ## Desenvolvimento inteiramente online
 
 Na pasta do repositório no Codespaces, usar Node 24 (referência npm 11.9.0; npm 11.19.1 também verificado na Fase 0):
