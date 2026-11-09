@@ -18,6 +18,7 @@ export default defineConfig({
     command: "node tests/fixtures/auth-local-server.mjs",
     url: "http://127.0.0.1:3100/recuperar-acesso",
     reuseExistingServer: false,
+    gracefulShutdown: { signal: "SIGTERM", timeout: 5000 },
     timeout: 120_000,
   },
 });
