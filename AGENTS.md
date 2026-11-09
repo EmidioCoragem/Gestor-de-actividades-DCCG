@@ -22,3 +22,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Coordenação da equipa de agentes
+
+- O Codex principal distribui tarefas e consolida decisões de arquitectura e alterações relevantes, seguindo [a coordenação da equipa](docs/agentes/coordenacao.md).
+- Papéis: [Segurança](docs/agentes/seguranca.md), [Base de Dados](docs/agentes/base-de-dados.md), [Desenvolvimento](docs/agentes/desenvolvimento.md), [Interface e Experiência do Utilizador](docs/agentes/interface-ux.md) e [Testes e Qualidade](docs/agentes/testes-qualidade.md).
+- Trabalhar exclusivamente na branch `fase-1-autenticacao-permissoes`. A equipa permanece na Fase 1 até homologação e aprovação; outra fase exige autorização expressa própria. Preservar commits, stashes e trabalho existente; não modificar `main` nem efectuar merge.
+- Atribuir apenas um agente editor por ficheiro em cada tarefa, salvo coordenação explícita. Paralelizar tarefas independentes e efectuar revisão cruzada sem duplicar alterações.
+- Papéis documentais não autorizam operações críticas: SQL remoto, migrações, bootstrap AT/AF, operações Auth, contas, concessões, alterações no Supabase, instalações e exportações exigem autorização específica aplicável.
+- Preservar decisões aprovadas de arquitectura, segurança, permissões e identidade visual. Propor alterações relevantes antes de implementar. Reutilizar evidências válidas; repetir auditorias/testes apenas por motivo concreto e cumprir os checks aplicáveis à entrega.
+- Estas definições não garantem instâncias persistentes ou activação automática. Configuração nativa de subagentes deve ser validada separadamente no cliente Codex utilizado; não criar TOML presumido.
