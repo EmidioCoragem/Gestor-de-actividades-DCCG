@@ -1,5 +1,9 @@
 # Relatório da Fase 1
 
+## Lote 3 — demonstração funcional isolada — 13 de Novembro de 2026
+
+**APTO para demonstração local exclusivamente fictícia e de leitura.** Criado servidor Node autónomo, sem Next, configuração ou ligações Supabase, com selecção explícita de cinco cenários, dois departamentos, estrutura/histórico, capacidades ilustrativas e recusas. Não existe login ou sessão Auth nesta demonstração; as operações de escrita estão bloqueadas e os controlos reais do portal permanecem intactos. ESLint, TypeScript e build Webpack aprovados; 432 testes Vitest e 24 testes Playwright da demo aprovados (desktop/tablet/mobile). Os 63 casos offline do Lote 2 foram reutilizados como evidência anterior, não reexecutados. O [guia e relatório do Lote 3](etapa-c/lote-3-demonstracao-isolada.md) identifica o que é fictício, as provas de isolamento e como abrir no Codespaces com porta 3000 Private, quando os ficheiros estiverem disponíveis nesse checkout. Sem push, merge, operações remotas ou alteração dos stashes. A homologação real e a intermitência Auth mobile continuam pendentes. O Lote 4 e a Fase 2 não foram iniciados.
+
 ## Lote 2 — consulta administrativa fiel — 13 de Novembro de 2026
 
 **APTO no âmbito local do Lote 2.** Consolidadas as melhorias de histórico organizacional, chefias, responsáveis, vigência, carregamento, erros e formulários dependentes, preservando guardas, sessão, CSRF, RLS e segregação AT/AF. ESLint e TypeScript aprovados; 385 testes Vitest e 63 testes Playwright offline aprovados; build Webpack aprovado. O [relatório técnico](etapa-c/lote-2-consulta-administrativa.md) discrimina ficheiros, ajustes finais, comandos, resultados e limites. A homologação real Supabase e a causa da intermitência Auth mobile do Lote 1 continuam pendentes; este resultado não declara a Fase 1 integralmente homologada. Sem operações remotas, alteração de stashes, push, merge ou início dos Lotes 3/4 e Fase 2.
