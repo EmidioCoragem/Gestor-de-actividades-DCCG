@@ -1,5 +1,9 @@
 # Relatório da Fase 1
 
+## Lote 2 — consulta administrativa fiel — 13 de Novembro de 2026
+
+**APTO no âmbito local do Lote 2.** Consolidadas as melhorias de histórico organizacional, chefias, responsáveis, vigência, carregamento, erros e formulários dependentes, preservando guardas, sessão, CSRF, RLS e segregação AT/AF. ESLint e TypeScript aprovados; 385 testes Vitest e 63 testes Playwright offline aprovados; build Webpack aprovado. O [relatório técnico](etapa-c/lote-2-consulta-administrativa.md) discrimina ficheiros, ajustes finais, comandos, resultados e limites. A homologação real Supabase e a causa da intermitência Auth mobile do Lote 1 continuam pendentes; este resultado não declara a Fase 1 integralmente homologada. Sem operações remotas, alteração de stashes, push, merge ou início dos Lotes 3/4 e Fase 2.
+
 ## Lote 1 — build e testes locais — 9 de Novembro de 2026
 
 O [relatório técnico do Lote 1](etapa-c/lote-1-build-testes-locais.md) documenta a reprodução da saída vazia de TypeScript e a limitação de comunicação com processos filhos no sandbox Cloud. A comparação autorizada fora do sandbox devolveu JSON válido, refutando a hipótese de cache de compilação. Não foi necessária alteração funcional, de dependências ou de configuração de segurança. Foi corrigido apenas o encerramento da fixture Auth, com uma linha `gracefulShutdown` na configuração Playwright, após prova de pastas temporárias órfãs e revisão de Segurança. A primeira execução Auth mobile teve 18/19 aprovações; a causa da falha de hidratação continua indeterminada e não é declarada corrigida por essa linha. Comandos, resultados separados e limites constam do relatório, sem extrapolar para homologação real Supabase. Os Lotes 2–4 e a Fase 2 não foram iniciados.

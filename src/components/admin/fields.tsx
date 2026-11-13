@@ -22,18 +22,20 @@ export function SelectField({
   label,
   options,
   optional = false,
+  optionalLabel = "Sem unidade (âmbito global autorizado)",
 }: {
   name: string;
   label: string;
   options: { value: string; label: string }[];
   optional?: boolean;
+  optionalLabel?: string;
 }) {
   return (
     <label>
       {label}
       <select name={name} required={!optional}>
         <option value="">
-          {optional ? "Sem unidade (âmbito global autorizado)" : "Seleccionar…"}
+          {optional ? optionalLabel : "Seleccionar…"}
         </option>
         {options.map((item) => (
           <option key={item.value} value={item.value}>
