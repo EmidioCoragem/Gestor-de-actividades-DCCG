@@ -1,0 +1,115 @@
+.form {
+  max-width: 780px;
+}
+
+.heading {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.heading > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.heading h1 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.form textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 140px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.form input[readonly],
+.form textarea[readonly] {
+  background: var(--surface-soft);
+}
+
+.hint {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.error {
+  display: block;
+  color: var(--error);
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.table td {
+  max-width: 320px;
+  overflow-wrap: anywhere;
+}
+
+.table a {
+  color: var(--brand-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 24px;
+  margin: 20px 0;
+}
+
+.summary > div {
+  min-width: 0;
+}
+
+.summary dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.summary dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+@media (max-width: 640px) {
+  .summary {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px;
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
